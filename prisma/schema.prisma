@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model cargo {
+  id_cargo    Int        @id @default(autoincrement())
+  cargo       String     @db.VarChar(255)
+  descripcion String     @db.VarChar(255)
+  empleado    empleado[]
+}
+
+model categoria {
+  id_categoria Int        @id @default(autoincrement())
+  nombre       String     @db.VarChar(255)
+  descripcion  String     @db.VarChar(255)
+  producto     producto[]
+}
+
+model cliente {
+  id_cliente     Int             @id @default(autoincrement())
+  id_tipocliente Int
+  nombre         String          @db.VarChar(255)
+  apellido       String          @db.VarChar(255)
+  telefono       String          @db.VarChar(255)
+  tipocliente    tipocliente     @relation(fields: [id_tipocliente], references: [id_tipocliente], onDelete: NoAction, onUpdate: NoAction)
+  direccion      direccion[]
+  equipocliente  equipocliente[]
+  servicio       servicio[]
+}
+
+model direccion {
+  id_direccion  Int             @id @default(autoincrement())
+  id_cliente    Int
+  direccion     String          @db.VarChar(255)
+  cliente       cliente         @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
+  equipocliente equipocliente?
+}
+
+model egreso {
+  id_egreso    Int            @id @default(autoincrement())
+  fecha        DateTime       @db.Date
+  monto        Int
+  detalles     String         @db.VarChar(255)
+  gastovarios  gastovarios[]
+  pagoempleado pagoempleado[]
+  pagoimpuesto pagoimpuesto[]
+  suministro   suministro[]
+}
+
+model empleado {
+  id_empleado  Int            @id @default(autoincrement())
+  id_cargo     Int
+  nombre       String         @db.VarChar(255)
+  telefono     String         @db.VarChar(255)
+  cargo        cargo          @relation(fields: [id_cargo], references: [id_cargo], onDelete: NoAction, onUpdate: NoAction)
+  pagoempleado pagoempleado[]
+  recursos     recursos[]
+}
+
+model equipocliente {
+  id_equipocliente Int        @id @default(autoincrement())
+  id_cliente       Int
+  id_direccion     Int       @unique
+  id_tipoequipo    Int
+  numerodeserie    String     @db.VarChar(255)
+  capacidad        String?    @db.VarChar(255)
+  tamano           String?    @db.VarChar(255)
+  cliente          cliente    @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
+  direccion        direccion  @relation(fields: [id_direccion], references: [id_direccion], onDelete: NoAction, onUpdate: NoAction)
+  tipoequipo       tipoequipo @relation(fields: [id_tipoequipo], references: [id_tipoequipo], onDelete: NoAction, onUpdate: NoAction)
+  servicio         servicio[]
+}
+
+model gastovarios {
+  id_gastosvarios Int    @id @default(autoincrement())
+  id_egreso       Int
+  descripcion     String @db.VarChar(255)
+  egreso          egreso @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model ingreso {
+  id_ingreso  Int      @id @default(autoincrement())
+  id_servicio Int
+  monto       Int
+  detalles    String   @db.VarChar(255)
+  fecha       DateTime @db.Date
+  servicio    servicio @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model inventario {
+  id_inventario Int        @id @default(autoincrement())
+  id_producto   Int
+  stock         Int
+  producto      producto   @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction)
+  recursos      recursos[]
+}
+
+model pagoempleado {
+  id_pagoempleado Int      @id @default(autoincrement())
+  id_egreso       Int
+  id_empleado     Int
+  egreso          egreso   @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
+  empleado        empleado @relation(fields: [id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model pagoimpuesto {
+  id_pagoimpuesto Int          @id @default(autoincrement())
+  id_tipoimpuesto Int
+  id_egreso       Int
+  egreso          egreso       @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
+  tipoimpuesto    tipoimpuesto @relation(fields: [id_tipoimpuesto], references: [id_tipoimpuesto], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model post {
+  id          Int     @id @default(autoincrement())
+  name        String? @db.VarChar(255)
+  description String?
+}
+
+model producto {
+  id_producto  Int          @id @default(autoincrement())
+  id_categoria Int
+  nombre       String       @db.VarChar(255)
+  descripcion  String       @db.VarChar(255)
+  inventario   inventario[]
+  categoria    categoria    @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction)
+  suministro   suministro[]
+}
+
+model proveedor {
+  id_proveedor Int          @id @default(autoincrement())
+  nombre       String       @db.VarChar(255)
+  telefono     String       @db.VarChar(255)
+  suministro   suministro[]
+}
+
+model recursos {
+  id_recursos   Int        @id @default(autoincrement())
+  id_inventario Int
+  id_empleado   Int
+  cantidad      Int
+  fecha         DateTime   @db.Date
+  empleado      empleado   @relation(fields: [id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction)
+  inventario    inventario @relation(fields: [id_inventario], references: [id_inventario], onDelete: NoAction, onUpdate: NoAction)
+  servicio      servicio[]
+}
+
+model reporte {
+  id_reporte  Int      @id @default(autoincrement())
+  id_servicio Int
+  detalles    String   @db.VarChar(255)
+  fecha       DateTime @db.Date
+  servicio    servicio @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model servicio {
+  id_servicio      Int           @id @default(autoincrement())
+  id_cliente       Int
+  id_tiposervicio  Int
+  id_equipocliente Int
+  id_recursos      Int
+  ingreso          ingreso[]
+  reporte          reporte[]
+  cliente          cliente       @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
+  equipocliente    equipocliente @relation(fields: [id_equipocliente], references: [id_equipocliente], onDelete: NoAction, onUpdate: NoAction)
+  recursos         recursos      @relation(fields: [id_recursos], references: [id_recursos], onDelete: NoAction, onUpdate: NoAction)
+  tiposervicio     tiposervicio  @relation(fields: [id_tiposervicio], references: [id_tiposervicio], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model suministro {
+  id_suministro Int       @id @default(autoincrement())
+  id_proveedor  Int
+  id_producto   Int
+  id_egreso     Int
+  cantidad      Int
+  egreso        egreso    @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
+  producto      producto  @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction)
+  proveedor     proveedor @relation(fields: [id_proveedor], references: [id_proveedor], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model tipocliente {
+  id_tipocliente Int       @id @default(autoincrement())
+  tipo           String    @db.VarChar(255)
+  cliente        cliente[]
+}
+
+model tipoequipo {
+  id_tipoequipo Int             @id
+  tipo          String          @db.VarChar(255)
+  descripcion   String?         @db.VarChar(255)
+  equipocliente equipocliente[]
+}
+
+model tipoimpuesto {
+  id_tipoimpuesto Int            @id @default(autoincrement())
+  tipo            String         @db.VarChar(255)
+  pagoimpuesto    pagoimpuesto[]
+}
+
+model tiposervicio {
+  id_tiposervicio Int        @id @default(autoincrement())
+  nombre          String     @db.VarChar(255)
+  descripcion     String     @db.VarChar(255)
+  servicio        servicio[]
+}

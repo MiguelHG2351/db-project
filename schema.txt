@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model TipoEquipo {
+  ID_TipoEquipo Int    @id @default(autoincrement())
+  Capacidad     Int
+  Tamano        Int
+  Descripcion   String
+
+  EquipoCliente EquipoCliente[]
+}
+
+model Direccion {
+  ID_Direccion Int    @id @default(autoincrement())
+  Direction    String @db.VarChar(128)
+
+  Cliente       Cliente[]
+  EquipoCliente EquipoCliente[]
+}
+
+model TipoCliente {
+  ID_TipoCliente Int    @id @default(autoincrement())
+  Tipo           String @db.VarChar(128)
+
+  Cliente Cliente[]
+}
+
+model Cliente {
+  ID_Cliente     Int    @id @default(autoincrement())
+  ID_Direccion   Int
+  ID_TipoCliente Int
+  Nombre         String @db.VarChar(128)
+  Telefono       String @db.VarChar(128)
+
+  Direccion   Direccion   @relation(fields: [ID_Direccion], references: [ID_Direccion])
+  TipoCliente TipoCliente @relation(fields: [ID_TipoCliente], references: [ID_TipoCliente])
+  Servicio    Servicio[]
+
+  EquipoCliente EquipoCliente[]
+}
+
+model EquipoCliente {
+  ID_EquipoCliente Int    @id @default(autoincrement())
+  ID_Cliente       Int
+  ID_Direccion     Int
+  ID_TipoEquipo    Int
+  NumeroSerie      String @db.VarChar(128)
+
+  Cliente    Cliente    @relation(fields: [ID_Cliente], references: [ID_Cliente])
+  Direccion  Direccion  @relation(fields: [ID_Direccion], references: [ID_Direccion])
+  TipoEquipo TipoEquipo @relation(fields: [ID_TipoEquipo], references: [ID_TipoEquipo])
+  Servicio   Servicio[]
+}
+
+model Categoria {
+  ID_Categoria Int    @id @default(autoincrement())
+  Nombre       String @db.VarChar(128)
+  Descripcion  String
+
+  Producto Producto[]
+}
+
+model Producto {
+  ID_Producto  Int     @id @default(autoincrement())
+  ID_Categoria Int
+  Nombre       String  @db.VarChar(128)
+  Descripcion  String
+  Costo        Decimal @db.Decimal(10, 2)
+
+  Categoria Categoria @relation(fields: [ID_Categoria], references: [ID_Categoria])
+  Inventario Inventario[]
+}
+
+model Cargo {
+  ID_Cargo   Int    @id @default(autoincrement())
+  Cargo      String @db.VarChar(128)
+  Descrpcion String
+
+  Empleado Empleado[]
+}
+
+model Empleado {
+  ID_Empleado Int    @id @default(autoincrement())
+  ID_Cargo    Int
+  Nombre      String @db.VarChar(128)
+  Telefono    String @db.VarChar(128)
+
+  Cargo Cargo @relation(fields: [ID_Cargo], references: [ID_Cargo])
+  Recursos Recursos[]
+  PagoEmpleado PagoEmpleado[]
+}
+
+model Inventario {
+  ID_Inventario Int @id @default(autoincrement())
+  ID_Producto   Int
+  Stock         Int
+
+  Producto Producto @relation(fields: [ID_Producto], references: [ID_Producto])
+  recursos Recursos[]
+}
+
+model Recursos {
+  ID_Recurso Int    @id @default(autoincrement())
+  ID_Inventario Int
+  ID_Empleado Int
+  Cantidad Int
+  Fecha DateTime
+
+  Inventario Inventario @relation(fields: [ID_Inventario], references: [ID_Inventario])
+  Empleado Empleado @relation(fields: [ID_Empleado], references: [ID_Empleado])
+  Servicio Servicio[]
+}
+
+model TipoServicio {
+  ID_TipoServicio Int    @id @default(autoincrement())
+  Nombre        String @db.VarChar(128)
+  Descripcion   String
+  
+  Servicio Servicio[]
+}
+
+model Servicio {
+  ID_Servicio Int    @id @default(autoincrement())
+  ID_Cliente  Int
+  ID_TipoServicio Int
+  ID_EquipoCliente Int
+  ID_Recurso Int
+
+  TipoServicio TipoServicio @relation(fields: [ID_TipoServicio], references: [ID_TipoServicio])
+  EquipoCliente EquipoCliente @relation(fields: [ID_EquipoCliente], references: [ID_EquipoCliente])
+  Cliente Cliente @relation(fields: [ID_Cliente], references: [ID_Cliente])
+  Recursos Recursos @relation(fields: [ID_Recurso], references: [ID_Recurso])
+
+  Reporte Reporte[]
+  Ingreso Ingreso[]
+}
+
+model Reporte {
+  ID_Reporte Int    @id @default(autoincrement())
+  ID_Servicio Int
+  Detalles   String
+  Fecha      DateTime
+
+  Servicio Servicio @relation(fields: [ID_Servicio], references: [ID_Servicio])
+}
+
+model Ingreso {
+  ID_Ingreso Int    @id @default(autoincrement())
+  ID_Servicio Int
+  Monto      Decimal @db.Decimal(10, 2)
+  Detalles   String
+  Fecha      DateTime
+
+  Servicio Servicio @relation(fields: [ID_Servicio], references: [ID_Servicio])
+}
+
+model Egreso {
+  ID_Egreso Int    @id @default(autoincrement())
+  Monto     Decimal @db.Decimal(10, 2)
+  Detalles  String
+  Fecha     DateTime
+
+  PagoEmpleado PagoEmpleado[]
+  GastoVarios GastoVarios[]
+}
+
+model PagoEmpleado {
+  ID_PagoEmpleado Int    @id @default(autoincrement())
+  ID_Egreso       Int
+  ID_Empleado     Int
+
+  Egreso   Egreso   @relation(fields: [ID_Egreso], references: [ID_Egreso])
+  Empleado Empleado @relation(fields: [ID_Empleado], references: [ID_Empleado])
+}
+
+model GastoVarios {
+  ID_GastoVarios Int    @id @default(autoincrement())
+  ID_Egreso      Int
+  Detalles       String
+
+  Egreso Egreso @relation(fields: [ID_Egreso], references: [ID_Egreso])
+}
+
+
