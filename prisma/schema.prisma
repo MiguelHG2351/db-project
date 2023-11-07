@@ -86,7 +86,7 @@ model gastovarios {
 
 model ingreso {
   id_ingreso  Int      @id @default(autoincrement())
-  id_servicio Int
+  id_servicio Int @unique
   monto       Int
   detalles    String   @db.VarChar(255)
   fecha       DateTime @db.Date
@@ -115,12 +115,6 @@ model pagoimpuesto {
   id_egreso       Int
   egreso          egreso       @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
   tipoimpuesto    tipoimpuesto @relation(fields: [id_tipoimpuesto], references: [id_tipoimpuesto], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model post {
-  id          Int     @id @default(autoincrement())
-  name        String? @db.VarChar(255)
-  description String?
 }
 
 model producto {
@@ -153,7 +147,7 @@ model recursos {
 
 model reporte {
   id_reporte  Int      @id @default(autoincrement())
-  id_servicio Int
+  id_servicio Int      @unique
   detalles    String   @db.VarChar(255)
   fecha       DateTime @db.Date
   servicio    servicio @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
@@ -165,8 +159,8 @@ model servicio {
   id_tiposervicio  Int
   id_equipocliente Int
   id_recursos      Int
-  ingreso          ingreso[]
-  reporte          reporte[]
+  ingreso          ingreso?
+  reporte          reporte?
   cliente          cliente       @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
   equipocliente    equipocliente @relation(fields: [id_equipocliente], references: [id_equipocliente], onDelete: NoAction, onUpdate: NoAction)
   recursos         recursos      @relation(fields: [id_recursos], references: [id_recursos], onDelete: NoAction, onUpdate: NoAction)
@@ -191,7 +185,7 @@ model tipocliente {
 }
 
 model tipoequipo {
-  id_tipoequipo Int             @id
+  id_tipoequipo Int             @id @default(autoincrement())
   tipo          String          @db.VarChar(255)
   descripcion   String?         @db.VarChar(255)
   equipocliente equipocliente[]

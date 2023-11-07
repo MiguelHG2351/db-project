@@ -8,7 +8,7 @@ import { trpc } from './client'
 
 import React, { useState } from 'react'
 
-export function Provider({ children }: { children: React.ReactNode }) {
+export function TrpcProvider({ children }: { children: React.ReactNode }) {
   const [ queryClient ] = useState(() => new QueryClient({}))
   const [ trpcClient ] = useState(() => 
     trpc.createClient({
