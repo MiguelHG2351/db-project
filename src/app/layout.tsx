@@ -5,6 +5,7 @@ import './globals.css'
 
 import { AppProviders } from '@/components/Providers'
 import Sidebar from '@/components/Sidebar'
+import SectionInfo from '@/components/SectionInfo'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,7 +28,10 @@ export default function RootLayout({
         <AppProviders>
           <div className='grid grid-cols-[20%_auto]'>
             <Sidebar />
-            { children }
+            <section>
+              <SectionInfo />
+              { children }
+            </section>
           </div>
         </AppProviders>
       </body>
