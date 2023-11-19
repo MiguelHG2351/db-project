@@ -10,6 +10,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        "light-blue": "#001d22",
+        'celeste': '#c3f4e1',
+        'dark-blue': '#263f43'
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
