@@ -3,22 +3,21 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
-  directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
 }
 
 model cargo {
   id_cargo    Int        @id @default(autoincrement())
   cargo       String     @db.VarChar(255)
-  descripcion String     @db.VarChar(255)
+  descripcion String?    @db.VarChar(255)
   empleado    empleado[]
 }
 
 model categoria {
   id_categoria Int        @id @default(autoincrement())
   nombre       String     @db.VarChar(255)
-  descripcion  String     @db.VarChar(255)
+  descripcion  String?    @db.VarChar(255)
   producto     producto[]
 }
 
@@ -26,9 +25,9 @@ model cliente {
   id_cliente     Int             @id @default(autoincrement())
   id_tipocliente Int
   nombre         String          @db.VarChar(255)
-  apellido       String          @db.VarChar(255)
+  apellido       String?         @db.VarChar(255)
   telefono       String          @db.VarChar(255)
-  tipocliente    tipocliente     @relation(fields: [id_tipocliente], references: [id_tipocliente], onDelete: NoAction, onUpdate: NoAction)
+  tipocliente    tipocliente     @relation(fields: [id_tipocliente], references: [id_tipocliente], onUpdate: NoAction, map: "FK__cliente__id_tipo__08B54D69")
   direccion      direccion[]
   equipocliente  equipocliente[]
   servicio       servicio[]
@@ -36,10 +35,10 @@ model cliente {
 
 model direccion {
   id_direccion  Int             @id @default(autoincrement())
-  id_cliente    Int
   direccion     String          @db.VarChar(255)
-  cliente       cliente         @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
-  equipocliente equipocliente?
+  id_cliente    Int
+  cliente       cliente         @relation(fields: [id_cliente], references: [id_cliente], onUpdate: NoAction, map: "FK__direccion__id_cl__09A971A2")
+  equipocliente equipocliente[]
 }
 
 model egreso {
@@ -58,7 +57,7 @@ model empleado {
   id_cargo     Int
   nombre       String         @db.VarChar(255)
   telefono     String         @db.VarChar(255)
-  cargo        cargo          @relation(fields: [id_cargo], references: [id_cargo], onDelete: NoAction, onUpdate: NoAction)
+  cargo        cargo          @relation(fields: [id_cargo], references: [id_cargo], onUpdate: NoAction, map: "FK__empleado__id_car__0A9D95DB")
   pagoempleado pagoempleado[]
   recursos     recursos[]
 }
@@ -66,14 +65,14 @@ model empleado {
 model equipocliente {
   id_equipocliente Int        @id @default(autoincrement())
   id_cliente       Int
-  id_direccion     Int       @unique
+  id_direccion     Int
   id_tipoequipo    Int
   numerodeserie    String     @db.VarChar(255)
   capacidad        String?    @db.VarChar(255)
   tamano           String?    @db.VarChar(255)
-  cliente          cliente    @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
-  direccion        direccion  @relation(fields: [id_direccion], references: [id_direccion], onDelete: NoAction, onUpdate: NoAction)
-  tipoequipo       tipoequipo @relation(fields: [id_tipoequipo], references: [id_tipoequipo], onDelete: NoAction, onUpdate: NoAction)
+  cliente          cliente    @relation(fields: [id_cliente], references: [id_cliente], onUpdate: NoAction, map: "FK__equipocli__id_cl__0B91BA14")
+  direccion        direccion  @relation(fields: [id_direccion], references: [id_direccion], onUpdate: NoAction, map: "FK__equipocli__id_di__0C85DE4D")
+  tipoequipo       tipoequipo @relation(fields: [id_tipoequipo], references: [id_tipoequipo], onUpdate: NoAction, map: "FK__equipocli__id_ti__0D7A0286")
   servicio         servicio[]
 }
 
@@ -81,23 +80,23 @@ model gastovarios {
   id_gastosvarios Int    @id @default(autoincrement())
   id_egreso       Int
   descripcion     String @db.VarChar(255)
-  egreso          egreso @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
+  egreso          egreso @relation(fields: [id_egreso], references: [id_egreso], onUpdate: NoAction, map: "FK__gastovari__id_eg__0E6E26BF")
 }
 
 model ingreso {
   id_ingreso  Int      @id @default(autoincrement())
-  id_servicio Int @unique
+  id_servicio Int
   monto       Int
   detalles    String   @db.VarChar(255)
   fecha       DateTime @db.Date
-  servicio    servicio @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
+  servicio    servicio @relation(fields: [id_servicio], references: [id_servicio], onUpdate: NoAction, map: "FK__ingreso__id_serv__0F624AF8")
 }
 
 model inventario {
   id_inventario Int        @id @default(autoincrement())
   id_producto   Int
   stock         Int
-  producto      producto   @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction)
+  producto      producto   @relation(fields: [id_producto], references: [id_producto], onUpdate: NoAction, map: "FK__inventari__id_pr__10566F31")
   recursos      recursos[]
 }
 
@@ -105,32 +104,32 @@ model pagoempleado {
   id_pagoempleado Int      @id @default(autoincrement())
   id_egreso       Int
   id_empleado     Int
-  egreso          egreso   @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
-  empleado        empleado @relation(fields: [id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction)
+  egreso          egreso   @relation(fields: [id_egreso], references: [id_egreso], onUpdate: NoAction, map: "FK__pagoemple__id_eg__114A936A")
+  empleado        empleado @relation(fields: [id_empleado], references: [id_empleado], onUpdate: NoAction, map: "FK__pagoemple__id_em__123EB7A3")
 }
 
 model pagoimpuesto {
   id_pagoimpuesto Int          @id @default(autoincrement())
   id_tipoimpuesto Int
   id_egreso       Int
-  egreso          egreso       @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
-  tipoimpuesto    tipoimpuesto @relation(fields: [id_tipoimpuesto], references: [id_tipoimpuesto], onDelete: NoAction, onUpdate: NoAction)
+  egreso          egreso       @relation(fields: [id_egreso], references: [id_egreso], onUpdate: NoAction, map: "FK__pagoimpue__id_eg__1332DBDC")
+  tipoimpuesto    tipoimpuesto @relation(fields: [id_tipoimpuesto], references: [id_tipoimpuesto], onUpdate: NoAction, map: "FK__pagoimpue__id_ti__14270015")
 }
 
 model producto {
   id_producto  Int          @id @default(autoincrement())
   id_categoria Int
   nombre       String       @db.VarChar(255)
-  descripcion  String       @db.VarChar(255)
+  descripcion  String?      @db.VarChar(255)
   inventario   inventario[]
-  categoria    categoria    @relation(fields: [id_categoria], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction)
+  categoria    categoria    @relation(fields: [id_categoria], references: [id_categoria], onUpdate: NoAction, map: "FK__producto__id_cat__151B244E")
   suministro   suministro[]
 }
 
 model proveedor {
   id_proveedor Int          @id @default(autoincrement())
   nombre       String       @db.VarChar(255)
-  telefono     String       @db.VarChar(255)
+  telefono     String?      @db.VarChar(255)
   suministro   suministro[]
 }
 
@@ -140,17 +139,17 @@ model recursos {
   id_empleado   Int
   cantidad      Int
   fecha         DateTime   @db.Date
-  empleado      empleado   @relation(fields: [id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction)
-  inventario    inventario @relation(fields: [id_inventario], references: [id_inventario], onDelete: NoAction, onUpdate: NoAction)
+  empleado      empleado   @relation(fields: [id_empleado], references: [id_empleado], onUpdate: NoAction, map: "FK__recursos__id_emp__160F4887")
+  inventario    inventario @relation(fields: [id_inventario], references: [id_inventario], onUpdate: NoAction, map: "FK__recursos__id_inv__17036CC0")
   servicio      servicio[]
 }
 
 model reporte {
   id_reporte  Int      @id @default(autoincrement())
-  id_servicio Int      @unique
+  id_servicio Int
   detalles    String   @db.VarChar(255)
   fecha       DateTime @db.Date
-  servicio    servicio @relation(fields: [id_servicio], references: [id_servicio], onDelete: NoAction, onUpdate: NoAction)
+  servicio    servicio @relation(fields: [id_servicio], references: [id_servicio], onUpdate: NoAction, map: "FK__reporte__id_serv__17F790F9")
 }
 
 model servicio {
@@ -159,12 +158,12 @@ model servicio {
   id_tiposervicio  Int
   id_equipocliente Int
   id_recursos      Int
-  ingreso          ingreso?
-  reporte          reporte?
-  cliente          cliente       @relation(fields: [id_cliente], references: [id_cliente], onDelete: NoAction, onUpdate: NoAction)
-  equipocliente    equipocliente @relation(fields: [id_equipocliente], references: [id_equipocliente], onDelete: NoAction, onUpdate: NoAction)
-  recursos         recursos      @relation(fields: [id_recursos], references: [id_recursos], onDelete: NoAction, onUpdate: NoAction)
-  tiposervicio     tiposervicio  @relation(fields: [id_tiposervicio], references: [id_tiposervicio], onDelete: NoAction, onUpdate: NoAction)
+  ingreso          ingreso[]
+  reporte          reporte[]
+  cliente          cliente       @relation(fields: [id_cliente], references: [id_cliente], onUpdate: NoAction, map: "FK__servicio__id_cli__18EBB532")
+  equipocliente    equipocliente @relation(fields: [id_equipocliente], references: [id_equipocliente], onUpdate: NoAction, map: "FK__servicio__id_equ__19DFD96B")
+  recursos         recursos      @relation(fields: [id_recursos], references: [id_recursos], onUpdate: NoAction, map: "FK__servicio__id_rec__1AD3FDA4")
+  tiposervicio     tiposervicio  @relation(fields: [id_tiposervicio], references: [id_tiposervicio], onUpdate: NoAction, map: "FK__servicio__id_tip__1BC821DD")
 }
 
 model suministro {
@@ -173,9 +172,9 @@ model suministro {
   id_producto   Int
   id_egreso     Int
   cantidad      Int
-  egreso        egreso    @relation(fields: [id_egreso], references: [id_egreso], onDelete: NoAction, onUpdate: NoAction)
-  producto      producto  @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction)
-  proveedor     proveedor @relation(fields: [id_proveedor], references: [id_proveedor], onDelete: NoAction, onUpdate: NoAction)
+  egreso        egreso    @relation(fields: [id_egreso], references: [id_egreso], onUpdate: NoAction, map: "FK__suministr__id_eg__1CBC4616")
+  proveedor     proveedor @relation(fields: [id_proveedor], references: [id_proveedor], onUpdate: NoAction, map: "FK__suministr__id_pr__1DB06A4F")
+  producto      producto  @relation(fields: [id_producto], references: [id_producto], onUpdate: NoAction, map: "FK__suministr__id_pr__1EA48E88")
 }
 
 model tipocliente {
@@ -200,6 +199,6 @@ model tipoimpuesto {
 model tiposervicio {
   id_tiposervicio Int        @id @default(autoincrement())
   nombre          String     @db.VarChar(255)
-  descripcion     String     @db.VarChar(255)
+  descripcion     String?    @db.VarChar(255)
   servicio        servicio[]
 }
