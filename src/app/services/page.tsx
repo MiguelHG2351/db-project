@@ -3,9 +3,8 @@ import Service from "@/components/Service"
 export default function Services() {
 
   return (
-    <div>
-      <h1>Services</h1>
+    <section className="flex flex-col p-4">
       <Service />
-    </div>
+    </section>
   )
 }

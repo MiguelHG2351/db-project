@@ -10,7 +10,7 @@ export default function SectionInfo() {
       <Breadcrumbs>
         {
           router.split('/').map((item, index) => (
-            <BreadcrumbItem key={index}>{item || 'Home'}</BreadcrumbItem>
+            <BreadcrumbItem key={index}>{item ? item.charAt(0).toUpperCase() + item.slice(1) : 'Home'}</BreadcrumbItem>
           ))
         }
       </Breadcrumbs>
