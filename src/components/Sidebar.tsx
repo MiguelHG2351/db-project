@@ -6,8 +6,8 @@ export default function Sidebar() {
   return (
     <div className="h-screen bg-light-blue">
       <Link href="/" className="flex px-4 items-center justify-start gap-x-4 py-4">
-        <div className="bg-celeste p-2 rounded-lg">
-          <Image src="/images/refrikar.png" width={18} height={18} alt="Logo of Refrikar" />
+        <div className="bg-celeste rounded-lg">
+          <Image src="/images/logo.png" width={34} height={34} alt="Logo of Refrikar" />
         </div>
         <span className="text-celeste font-semibold">Refrikar</span>
       </Link>

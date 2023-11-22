@@ -1,8 +1,15 @@
 'use client'
 import {Tabs, Tab, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, RadioGroup, Radio } from "@nextui-org/react";
+import { serverClient } from '@/app/_trpc/serverClient'
+import { trpc } from "@/app/_trpc/client";
 
+export default function ListOfClients({ initialClients }: { initialClients: Awaited<ReturnType<(typeof serverClient)['getAllClientes']>> }) {
+  const getClients = trpc.getAllClientes.useQuery(undefined,{
+    initialData: initialClients,
+    refetchOnMount: false,
+    refetchOnReconnect: false
+  });
 
-export default function ListOfClients() {
   let tabs = [
     {
       id: "asc",
@@ -17,37 +24,32 @@ export default function ListOfClients() {
   ];
 
   return (
-    <section>
-      <div className="flex w-full flex-col py-4">
+    <section className="flex-1 flex flex-col">
+      <div className="flex w-full flex-col py-4 flex-1">
         <Tabs aria-label="Dynamic tabs" items={tabs}>
           {(item) => (
             <Tab key={item.id} title={item.label}>
-              <Table color="primary" aria-label="Lista de usuarios">
+              <Table color="primary"  isHeaderSticky classNames={{
+                wrapper: 'max-h-[450px]'
+              }} aria-label="Lista de usuarios">
                 <TableHeader>
-                  <TableColumn>Ids</TableColumn>
+                  <TableColumn>Id</TableColumn>
                   <TableColumn>Nombre</TableColumn>
                   <TableColumn>Tipo de cliente</TableColumn>
                   <TableColumn>telefono</TableColumn>
                 </TableHeader>
                 <TableBody>
-                  <TableRow key={1}>
-                    <TableCell>1</TableCell>
-                    <TableCell>Rene Perez</TableCell>
-                    <TableCell>Natural</TableCell>
-                    <TableCell>+505 34567890</TableCell>
-                  </TableRow>
-                  <TableRow key={2}>
-                    <TableCell>2</TableCell>
-                    <TableCell>Miguel Martinez</TableCell>
-                    <TableCell>Natural</TableCell>
-                    <TableCell>+505 23456789</TableCell>
-                  </TableRow>
-                  <TableRow key={3}>
-                    <TableCell>3</TableCell>
-                    <TableCell>Casa blanca</TableCell>
-                    <TableCell>Juridico</TableCell>
-                    <TableCell>+505 66666666</TableCell>
-                  </TableRow>
+                  {
+                  getClients?.data?.map((cliente, key) => (
+                    <TableRow key={key}>
+                      <TableCell>{cliente.id_cliente}</TableCell>
+                      <TableCell>{ `${cliente.nombre} ${cliente.apellido != null ? cliente.apellido: ''}` }</TableCell>
+                      {/* <TableCell>{ cliente.nombre + " " + cliente.apellido != null ? cliente.apellido: '' }</TableCell> */}
+                      <TableCell>{ cliente.tipocliente.tipo }</TableCell>
+                      <TableCell>{ cliente.telefono }</TableCell>
+                    </TableRow>
+                  ))
+                  }
                 </TableBody>
               </Table>
                   {/* {item.content} */}

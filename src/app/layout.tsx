@@ -26,9 +26,9 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AppProviders>
-          <div className='grid grid-cols-[20%_auto]'>
+          <div className='grid grid-cols-[20%_auto] h-screen overflow-hidden'>
             <Sidebar />
-            <section>
+            <section className='flex flex-col'>
               <SectionInfo />
               { children }
             </section>

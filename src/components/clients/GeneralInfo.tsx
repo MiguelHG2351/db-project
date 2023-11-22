@@ -25,7 +25,7 @@ export default function GeneralInfo() {
           <div className="border-[#d3d3d3] rounded-xl border flex items-center justify-center w-16 h-16">
             <i className="fa fa-wind text-black before:align-middle text-2xl"></i>
           </div>
-          <h3 className="text-gray-700 font-semibold text-xl">Equipos de cliente</h3>
+          <h3 className="text-gray-700 font-semibold text-xl">Equipos registrados</h3>
           <span>10</span>
         </article>
       </section>
