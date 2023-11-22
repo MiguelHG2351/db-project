@@ -28,8 +28,26 @@ export default function Sidebar() {
           </li>
           <li>
             <Link href="/" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
+                <i className="fa fa-user-tie text-white before:align-middle"></i>
+                Proveedores
+            </Link>
+          </li>
+          <li>
+            <Link href="/" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
+                <i className="fa fa-box-open text-white before:align-middle"></i>
+                Productos
+            </Link>
+          </li>
+          <li>
+            <Link href="/" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
                 <i className="fa fa-money-bill text-white before:align-middle"></i>
                 Ingresos
+            </Link>
+          </li>
+          <li>
+            <Link href="/" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
+                <i className="fa fa-money-bill text-white before:align-middle"></i>
+                Egresos
             </Link>
           </li>
         </ul>

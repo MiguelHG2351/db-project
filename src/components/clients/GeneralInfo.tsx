@@ -26,7 +26,7 @@ export default function GeneralInfo() {
             <i className="fa fa-wind text-black before:align-middle text-2xl"></i>
           </div>
           <h3 className="text-gray-700 font-semibold text-xl">Equipos de cliente</h3>
-          <span>43</span>
+          <span>10</span>
         </article>
       </section>
         {/* {JSON.stringify(getTodos.data)} */}

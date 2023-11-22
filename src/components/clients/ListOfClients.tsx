@@ -13,11 +13,6 @@ export default function ListOfClients() {
       id: "desc",
       label: "Descendente",
       content: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-    },
-    {
-      id: "Nuevos",
-      label: "Videos",
-      content: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
     }
   ];
 
@@ -27,7 +22,7 @@ export default function ListOfClients() {
         <Tabs aria-label="Dynamic tabs" items={tabs}>
           {(item) => (
             <Tab key={item.id} title={item.label}>
-              <Table color="primary">
+              <Table color="primary" aria-label="Lista de usuarios">
                 <TableHeader>
                   <TableColumn>Ids</TableColumn>
                   <TableColumn>Nombre</TableColumn>
@@ -37,21 +32,21 @@ export default function ListOfClients() {
                 <TableBody>
                   <TableRow key={1}>
                     <TableCell>1</TableCell>
-                    <TableCell>Rene Urbina Rivera</TableCell>
-                    <TableCell>Casual</TableCell>
-                    <TableCell>+505 77777777</TableCell>
+                    <TableCell>Rene Perez</TableCell>
+                    <TableCell>Natural</TableCell>
+                    <TableCell>+505 34567890</TableCell>
                   </TableRow>
                   <TableRow key={2}>
                     <TableCell>2</TableCell>
-                    <TableCell>Rene Urbina Rivera</TableCell>
-                    <TableCell>Rene Urbina Rivera</TableCell>
-                    <TableCell>+505 77777777</TableCell>
+                    <TableCell>Miguel Martinez</TableCell>
+                    <TableCell>Natural</TableCell>
+                    <TableCell>+505 23456789</TableCell>
                   </TableRow>
                   <TableRow key={3}>
                     <TableCell>3</TableCell>
-                    <TableCell>Rene Urbina Rivera</TableCell>
-                    <TableCell>Empresa</TableCell>
-                    <TableCell>+505 77777777</TableCell>
+                    <TableCell>Casa blanca</TableCell>
+                    <TableCell>Juridico</TableCell>
+                    <TableCell>+505 66666666</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>

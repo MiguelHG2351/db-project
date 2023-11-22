@@ -1,5 +1,10 @@
 import GeneralInfo from "@/components/clients/GeneralInfo"
-import ListOfClients from "./ListOfClients"
+import ListOfClients from "../../components/clients/ListOfClients"
+
+export const metadata = {
+  title: 'Clientes',
+  description: 'Clientes'
+}
 
 export default function Services() {
 
