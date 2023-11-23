@@ -30,7 +30,8 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
           {(item) => (
             <Tab key={item.id} title={item.label}>
               <Table color="primary"  isHeaderSticky classNames={{
-                wrapper: 'max-h-[450px]'
+                wrapper: 'max-h-[684px]'
+                // wrapper: 'max-h-[450px]'
               }} aria-label="Lista de usuarios">
                 <TableHeader>
                   <TableColumn>Id</TableColumn>
