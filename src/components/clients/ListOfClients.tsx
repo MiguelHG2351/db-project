@@ -23,6 +23,11 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
+
+import { RouterOutputs } from "@/server";
+
+import { useForm } from "react-hook-form";
+
 import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
@@ -49,6 +54,8 @@ const columns = [
 
 const INITIAL_VISIBLE_COLUMNS = ['id_cliente', "nombre", "telefono", "actions"];
 
+type User = RouterOutputs["getAllClientes"][0];
+
 
 export default function ListOfClients({ initialClients }: { initialClients: Awaited<ReturnType<(typeof serverClient)['getAllClientes']>> })  {
   const getClients = trpc.getAllClientes.useQuery(undefined,{
@@ -56,9 +63,11 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
     refetchOnMount: false,
     refetchOnReconnect: false
   });
-  type User = typeof initialClients[0];
+
+  // type User = User;
   
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -151,7 +160,10 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
-                <DropdownItem onClick={() => onOpen()}>Editar</DropdownItem>
+                <DropdownItem onClick={() => {
+                  setSelectedUser(user)
+                  onOpen()
+                }}>Editar</DropdownItem>
                 <DropdownItem>Borrar</DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -326,38 +338,69 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
           }}
         </TableBody>
       </Table>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
-              <ModalBody>
-              <Input
-                  autoFocus
-                  label="Nombre"
-                  name="nombre"
-                  placeholder="Ingresa su nuevo nombre"
-                  variant="bordered"
-                />
-              <Input
-                  label="Telefono"
-                  name="telefono"
-                  placeholder="Ingresa su nuevo telefono"
-                  variant="bordered"
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button color="primary" onPress={onClose}>
-                  Guardar
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+      <ModalInfo isOpen={isOpen} onOpenChange={onOpenChange} selectedUser={selectedUser} />
     </>
   );
+}
+
+
+function ModalInfo({ isOpen, onOpenChange, selectedUser }: { isOpen: boolean, onOpenChange: (open: boolean) => void, selectedUser: User | null  }) {
+  const { mutate, isLoading: isUpdating } = trpc.editUser.useMutation();
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      nombre: selectedUser?.nombre,
+      telefono: selectedUser?.telefono
+    }
+  })
+
+  function onSubmit(data: any) {
+    console.log(data)
+    // avoid send empty data
+    if (data.nombre === "" || data.telefono === "") return
+    console.log("userinfo", data.nombre, data.telefono)
+    mutate({ id: selectedUser!.id_cliente, nombre: data.nombre })
+    close()
+  }
+
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Modificar cliente: {selectedUser?.nombre}</ModalHeader>
+            <ModalBody>
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 py-2">
+                <Input
+                    autoFocus
+                    label="Nombre"
+                    placeholder="Ingresa su nuevo nombre"
+                    variant="bordered"
+                    {...register('nombre')}
+                    isDisabled={isUpdating}
+                    />
+                <Input
+                    label="Telefono"
+                    placeholder="Ingresa su nuevo telefono"
+                    variant="bordered"
+                    {...register('telefono')}
+                    isDisabled={isUpdating}
+                  />
+                <div className="flex justify-end pb-2 pt-3">
+                  <Button isDisabled={isUpdating} type="button" color="danger" variant="light" onPress={onClose}>
+                    Close
+                  </Button>
+                  <Button isDisabled={isUpdating} type="submit" color="primary" onPress={() => {
+                    console.log("guardar", selectedUser)
+                    onClose()
+                  }}>
+                    Guardar
+                  </Button>
+                </div>
+              </form>
+            </ModalBody>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  )
 }
