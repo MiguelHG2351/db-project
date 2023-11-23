@@ -1,3 +1,4 @@
+import { inferRouterOutputs } from "@trpc/server";
 import { publicProcedure, router } from "./trpc";
 import { PrismaClient } from "@prisma/client";
 
@@ -22,3 +23,4 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+export type RouterOutputs = inferRouterOutputs<AppRouter>;
