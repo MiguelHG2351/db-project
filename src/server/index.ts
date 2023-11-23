@@ -2,6 +2,7 @@ import { inferRouterOutputs } from "@trpc/server";
 import { publicProcedure, router } from "./trpc";
 
 import { prisma } from "./prisma";
+import { z } from "zod";
 
 export const appRouter = router({
   
@@ -19,6 +20,23 @@ export const appRouter = router({
       }
     });
   }),
+  editUser: publicProcedure.input(
+    z.object({
+      nombre: z.string(),
+      id: z.number()
+    }),
+  ).mutation(async ({ input }) => {
+    const user = await prisma.cliente.update({
+      where: {
+        id_cliente: input.id
+      },
+      data: {
+        nombre: input.nombre
+      }
+    });
+
+    return user;
+  })
 });
 
 export type AppRouter = typeof appRouter;
