@@ -20,7 +20,6 @@ import {
   ModalContent, 
   ModalHeader, 
   ModalBody, 
-  ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
 
@@ -61,7 +60,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
   const getClients = trpc.getAllClientes.useQuery(undefined,{
     initialData: initialClients,
     refetchOnMount: false,
-    refetchOnReconnect: false
+    refetchOnReconnect: true
   });
 
   // type User = User;
@@ -309,8 +308,8 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
         classNames={{
           wrapper: "max-h-[452px]",
         }}
-        selectedKeys={selectedKeys}
-        selectionMode="multiple"
+        // selectedKeys={selectedKeys}
+        // selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
@@ -345,7 +344,9 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
 
 
 function ModalInfo({ isOpen, onOpenChange, selectedUser }: { isOpen: boolean, onOpenChange: (open: boolean) => void, selectedUser: User | null  }) {
+  'use client'
   const { mutate, isLoading: isUpdating } = trpc.editUser.useMutation();
+  const utils = trpc.useUtils()
   const { register, handleSubmit } = useForm({
     defaultValues: {
       nombre: selectedUser?.nombre,
@@ -354,12 +355,13 @@ function ModalInfo({ isOpen, onOpenChange, selectedUser }: { isOpen: boolean, on
   })
 
   function onSubmit(data: any) {
-    console.log(data)
     // avoid send empty data
     if (data.nombre === "" || data.telefono === "") return
-    console.log("userinfo", data.nombre, data.telefono)
-    mutate({ id: selectedUser!.id_cliente, nombre: data.nombre })
-    close()
+    mutate({ id: selectedUser!.id_cliente, nombre: data.nombre }, {
+      onSuccess: () => {
+        utils.getAllClientes.invalidate()
+      }
+    })
   }
 
   return (
@@ -390,7 +392,6 @@ function ModalInfo({ isOpen, onOpenChange, selectedUser }: { isOpen: boolean, on
                     Close
                   </Button>
                   <Button isDisabled={isUpdating} type="submit" color="primary" onPress={() => {
-                    console.log("guardar", selectedUser)
                     onClose()
                   }}>
                     Guardar

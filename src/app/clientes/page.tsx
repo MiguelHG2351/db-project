@@ -12,7 +12,7 @@ export default async function Clientes() {
 
   return (
     <section className="flex flex-col p-4 flex-1">
-      <GeneralInfo />
+      <GeneralInfo initialClients={clientes} />
       <ListOfClients initialClients={clientes} />
     </section>
   )
