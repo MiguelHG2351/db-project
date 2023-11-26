@@ -34,6 +34,7 @@ import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
 import { ExcelIcon } from "../icons/ExcelIcon";
 import { ModalEditClienteInfo } from "../Modal/EditClienteInfo";
+import { ModalShowClienteEquipos } from "../Modal/ShowEquipos";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -69,6 +70,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
   // type User = User;
   
   const { isOpen: isOpenModal, onOpen: onOpenModal, onOpenChange: onOpenChangeModal, onClose } = useDisclosure();
+  const { isOpen: isOpenModal2, onOpen: onOpenModal2, onOpenChange: onOpenChangeModal2, onClose: onClose2 } = useDisclosure();
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
@@ -171,7 +173,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
                 <DropdownItem aria-label="Mostrar direcciones">Ver Direcciones</DropdownItem>
                 <DropdownItem aria-label="Mostrar equipos"onClick={() => {
                   setSelectedUser(user)
-                  onOpenModal()
+                  onOpenModal2()
                 }}>Ver Equipos</DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -379,7 +381,18 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
       {/* <ModalEquipoInfo isOpen={isEquipoModalOpen} onOpenChange={onEquipoModalOpen} selectedUser={selectedUser} /> */}
       <Modal isOpen={isOpenModal} onOpenChange={onOpenChangeModal}>
         <ModalContent>
-              <ModalEditClienteInfo onClose={onClose} clienteId={selectedUser!?.id_cliente} />
+          {
+            
+            <ModalEditClienteInfo onClose={onClose} clienteId={selectedUser!?.id_cliente} />
+          }
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isOpenModal2} onOpenChange={onOpenChangeModal2}>
+        <ModalContent>
+          {
+
+            <ModalShowClienteEquipos onClose={onClose2} clienteId={selectedUser!?.id_cliente} />
+          }
         </ModalContent>
       </Modal>
       {/* <ModalEditInfo isOpen={isEditModalOpen} onOpenChange={onEditModalOpen} selectedUser={selectedUser} /> */}
@@ -440,68 +453,3 @@ function ModalEquipoInfo({ selectedUser, isOpen, onOpenChange }: { selectedUser:
   )
 }
 
-function ModalEditInfo({ isOpen, onOpenChange, selectedUser }: { isOpen: boolean, onOpenChange: (open: boolean) => void, selectedUser: User | null  }) {
-  'use client'
-  const { mutate, isLoading: isUpdating } = trpc.editUser.useMutation();
-  const utils = trpc.useUtils()
-  const { register, handleSubmit, reset } = useForm({
-    defaultValues: {
-      nombre: selectedUser?.nombre,
-      apellido: selectedUser?.apellido
-    }
-  })
-
-  function onSubmit(data: any) {
-    // avoid send empty data
-    if (data.nombre === "" || data.telefono === "") return
-    mutate({ id: selectedUser!.id_cliente, nombre: data.nombre }, {
-      onSuccess: () => {
-        utils.getAllClientes.invalidate()
-      }
-    })
-  }
-
-  return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">Modificar cliente: {selectedUser?.nombre}</ModalHeader>
-            <ModalBody>
-              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 py-2">
-                <Input
-                    autoFocus
-                    label="Nombre"
-                    placeholder="Ingresa su nuevo nombre"
-                    variant="bordered"
-                    {...register('nombre')}
-                    isDisabled={isUpdating}
-                    />
-                <Input
-                    label="Apellido"
-                    placeholder="Ingresa su apellido"
-                    variant="bordered"
-                    {...register('apellido')}
-                    isDisabled={isUpdating}
-                  />
-                <div className="flex justify-end pb-2 pt-3">
-                  <Button isDisabled={isUpdating} type="button" color="danger" variant="light" onPress={() => {
-                    reset()
-                    onClose()
-                  }}>
-                    Close
-                  </Button>
-                  <Button isDisabled={isUpdating} type="submit" color="primary" onPress={() => {
-                    onClose()
-                  }}>
-                    Guardar
-                  </Button>
-                </div>
-              </form>
-            </ModalBody>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
-  )
-}
