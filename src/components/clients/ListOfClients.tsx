@@ -30,6 +30,7 @@ import { useForm } from "react-hook-form";
 import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
+import { ExcelIcon } from "../icons/ExcelIcon";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -217,6 +218,13 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
             onValueChange={onSearchChange}
           />
           <div className="flex gap-3">
+            {
+              (selectedKeys === "all" || selectedKeys.size > 0) ? 
+                <Button>
+                  Exportar a <ExcelIcon />
+                </Button>
+              : null
+            }
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
@@ -287,7 +295,8 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
     onRowsPerPageChange,
     getClients.data.length,
     hasSearchFilter,
-    tipoFilter
+    tipoFilter,
+    selectedKeys
   ]);
 
   const bottomContent = React.useMemo(() => {
@@ -329,8 +338,8 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
         classNames={{
           wrapper: "max-h-[452px]",
         }}
-        // selectedKeys={selectedKeys}
-        // selectionMode="multiple"
+        selectedKeys={selectedKeys}
+        selectionMode="multiple"
         sortDescriptor={sortDescriptor}
         topContent={topContent}
         topContentPlacement="outside"
