@@ -25,6 +25,26 @@ export const appRouter = router({
       }
     });
   }),
+  getCliente: publicProcedure.input(
+    z.object({
+      id: z.number()
+    }),
+  ).query(async ({ input }) => {
+    const data = await prisma.cliente.findUnique({
+      where: {
+        id_cliente: input.id
+      },
+      include: {
+        tipocliente: true,
+        equipocliente: {
+          include: {
+            tipoequipo: true
+          }
+        }
+      }
+    });
+    return data;
+  }),
   editUser: publicProcedure.input(
     z.object({
       nombre: z.string(),

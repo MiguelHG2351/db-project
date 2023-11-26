@@ -33,6 +33,7 @@ import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
 import { ExcelIcon } from "../icons/ExcelIcon";
+import { ModalEditClienteInfo } from "../Modal/EditClienteInfo";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -67,7 +68,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
 
   // type User = User;
   
-  const { isOpen: isEditModalOpen, onOpen: onEditModalOpen, onOpenChange: onEditOpenModalChange } = useDisclosure();
+  const { isOpen: isEditModalOpen, onOpen: onEditModalOpen, onOpenChange: onEditOpenModalChange, onClose } = useDisclosure();
   const { isOpen: isEquipoModalOpen, onOpen: onEquipoModalOpen, onOpenChange: onEquipoOpenModalChange } = useDisclosure();
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [filterValue, setFilterValue] = React.useState("");
@@ -376,8 +377,13 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
           }}
         </TableBody>
       </Table>
-      <ModalEquipoInfo isOpen={isEquipoModalOpen} onOpenChange={onEquipoModalOpen} selectedUser={selectedUser} />
-      <ModalEditInfo isOpen={isEditModalOpen} onOpenChange={onEditModalOpen} selectedUser={selectedUser} />
+      {/* <ModalEquipoInfo isOpen={isEquipoModalOpen} onOpenChange={onEquipoModalOpen} selectedUser={selectedUser} /> */}
+      <Modal isOpen={isEditModalOpen} onOpenChange={onEditModalOpen}>
+        <ModalContent>
+              <ModalEditClienteInfo onClose={onClose} clienteId={selectedUser!?.id_cliente} />
+        </ModalContent>
+      </Modal>
+      {/* <ModalEditInfo isOpen={isEditModalOpen} onOpenChange={onEditModalOpen} selectedUser={selectedUser} /> */}
     </>
   );
 }
