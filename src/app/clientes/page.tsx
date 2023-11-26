@@ -11,7 +11,7 @@ export default async function Clientes() {
   const clientes = await serverClient.getAllClientes()
 
   return (
-    <section className="flex flex-col p-4 flex-1">
+    <section className="flex flex-col p-4 flex-1 gap-y-4">
       <GeneralInfo initialClients={clientes} />
       <ListOfClients initialClients={clientes} />
     </section>

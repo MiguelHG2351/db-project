@@ -45,13 +45,12 @@ const columns = [
   // {name: "equipos", uid: "email"},
 ];
 
-// const statusOptions = [
-//   {name: "Active", uid: "active"},
-//   {name: "Paused", uid: "paused"},
-//   {name: "Vacation", uid: "vacation"},
-// ];
+const tipoCliente = [
+  {name: "Juridico", uid: "juridico"},
+  {name: "Natural", uid: "natural"},
+];
 
-const INITIAL_VISIBLE_COLUMNS = ['id_cliente', "nombre", "telefono", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ['id_cliente', "nombre", "tipo", "telefono", "actions"];
 
 type User = RouterOutputs["getAllClientes"][0];
 
@@ -70,6 +69,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
+  const [ tipoFilter, setTipoFilter ] = React.useState<Selection>("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: "id_cliente",
@@ -95,8 +95,12 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
       );
     }
 
+    if(tipoFilter !== "all" && tipoFilter.size !== tipoCliente.length ){
+      filteredUsers = filteredUsers.filter((user) => Array.from(tipoFilter).includes(user.tipocliente.tipo.toLowerCase()))
+    }
+
     return filteredUsers;
-  }, [getClients.data, filterValue]);
+  }, [getClients.data, filterValue, tipoFilter]);
 
   const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -118,34 +122,29 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
   }, [sortDescriptor, items]);
 
   const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof User];
 
     switch (columnKey) {
       case "nombre":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{`${cellValue}`}</p>
             <p className="text-bold text-tiny capitalize text-default-400">{user.nombre}</p>
           </div>
         );
       case "apellido":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{`${cellValue}`}</p>
             <p className="text-bold text-tiny capitalize text-default-400">{user.apellido}</p>
           </div>
         );
       case "telefono":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{`${cellValue}`}</p>
             <p className="text-bold text-tiny capitalize text-default-400">{user.telefono}</p>
           </div>
         );
       case "tipo":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-small capitalize">{`${cellValue}`}</p>
             <p className="text-bold text-tiny capitalize text-default-400">{user.tipocliente.tipo}</p>
           </div>
         );
@@ -169,7 +168,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
           </div>
         );
       default:
-        return cellValue;
+        return user.id_cliente;
     }
   }, []);
 
@@ -221,6 +220,27 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
             <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
+                  Tipo cliente
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={tipoFilter}
+                selectionMode="multiple"
+                onSelectionChange={setTipoFilter}
+              >
+                {tipoCliente.map((column) => (
+                  <DropdownItem key={column.uid} className="capitalize">
+                    {capitalize(column.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button endContent={<ChevronDownIcon className="text-small" />} variant="flat">
                   Columnas
                 </Button>
               </DropdownTrigger>
@@ -267,6 +287,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
     onRowsPerPageChange,
     getClients.data.length,
     hasSearchFilter,
+    tipoFilter
   ]);
 
   const bottomContent = React.useMemo(() => {
