@@ -69,8 +69,8 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
 
   // type User = User;
   
-  const { isOpen: isOpenModal, onOpen: onOpenModal, onOpenChange: onOpenChangeModal, onClose } = useDisclosure();
-  const { isOpen: isOpenModal2, onOpen: onOpenModal2, onOpenChange: onOpenChangeModal2, onClose: onClose2 } = useDisclosure();
+  const { isOpen: isOpenModalEdit, onOpen: onOpenModalEdit, onOpenChange: onOpenChangeModalEdit, onClose: onCloseEdit } = useDisclosure();
+  const { isOpen: isOpenModalEquipos, onOpen: onOpenModalEquipos, onOpenChange: onOpenChangeModalEquipos, onClose: onCloseEquipos } = useDisclosure();
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
@@ -166,14 +166,13 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
               <DropdownMenu aria-label="Lista de opciones">
                 <DropdownItem onClick={() => {
                   setSelectedUser(user)
-                  onOpenModal()
+                  onOpenModalEdit()
                 }}>Editar</DropdownItem>
-                <DropdownItem aria-label="Mostrar servicios">Ver más info</DropdownItem>
                 <DropdownItem aria-label="Mostrar servicios">Ver servicios</DropdownItem>
                 <DropdownItem aria-label="Mostrar direcciones">Ver Direcciones</DropdownItem>
                 <DropdownItem aria-label="Mostrar equipos"onClick={() => {
                   setSelectedUser(user)
-                  onOpenModal2()
+                  onOpenModalEquipos()
                 }}>Ver Equipos</DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -378,24 +377,16 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
           }}
         </TableBody>
       </Table>
-      {/* <ModalEquipoInfo isOpen={isEquipoModalOpen} onOpenChange={onEquipoModalOpen} selectedUser={selectedUser} /> */}
-      <Modal isOpen={isOpenModal} onOpenChange={onOpenChangeModal}>
+      <Modal isOpen={isOpenModalEdit} onOpenChange={onOpenChangeModalEdit}>
         <ModalContent>
-          {
-            
-            <ModalEditClienteInfo onClose={onClose} clienteId={selectedUser!?.id_cliente} />
-          }
+          <ModalEditClienteInfo onClose={onCloseEdit} clienteId={selectedUser!?.id_cliente} />
         </ModalContent>
       </Modal>
-      <Modal isOpen={isOpenModal2} onOpenChange={onOpenChangeModal2}>
+      <Modal isOpen={isOpenModalEquipos} onOpenChange={onOpenChangeModalEquipos}>
         <ModalContent>
-          {
-
-            <ModalShowClienteEquipos onClose={onClose2} clienteId={selectedUser!?.id_cliente} />
-          }
+            <ModalShowClienteEquipos onClose={onCloseEquipos} clienteId={selectedUser!?.id_cliente} />
         </ModalContent>
       </Modal>
-      {/* <ModalEditInfo isOpen={isEditModalOpen} onOpenChange={onEditModalOpen} selectedUser={selectedUser} /> */}
     </>
   );
 }
