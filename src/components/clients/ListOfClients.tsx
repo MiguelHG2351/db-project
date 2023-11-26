@@ -68,8 +68,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
 
   // type User = User;
   
-  const { isOpen: isEditModalOpen, onOpen: onEditModalOpen, onOpenChange: onEditOpenModalChange, onClose } = useDisclosure();
-  const { isOpen: isEquipoModalOpen, onOpen: onEquipoModalOpen, onOpenChange: onEquipoOpenModalChange } = useDisclosure();
+  const { isOpen: isOpenModal, onOpen: onOpenModal, onOpenChange: onOpenChangeModal, onClose } = useDisclosure();
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
@@ -165,14 +164,14 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
               <DropdownMenu aria-label="Lista de opciones">
                 <DropdownItem onClick={() => {
                   setSelectedUser(user)
-                  onEditModalOpen()
+                  onOpenModal()
                 }}>Editar</DropdownItem>
                 <DropdownItem aria-label="Mostrar servicios">Ver más info</DropdownItem>
                 <DropdownItem aria-label="Mostrar servicios">Ver servicios</DropdownItem>
                 <DropdownItem aria-label="Mostrar direcciones">Ver Direcciones</DropdownItem>
                 <DropdownItem aria-label="Mostrar equipos"onClick={() => {
                   setSelectedUser(user)
-                  onEquipoModalOpen()
+                  onOpenModal()
                 }}>Ver Equipos</DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -378,7 +377,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
         </TableBody>
       </Table>
       {/* <ModalEquipoInfo isOpen={isEquipoModalOpen} onOpenChange={onEquipoModalOpen} selectedUser={selectedUser} /> */}
-      <Modal isOpen={isEditModalOpen} onOpenChange={onEditModalOpen}>
+      <Modal isOpen={isOpenModal} onOpenChange={onOpenChangeModal}>
         <ModalContent>
               <ModalEditClienteInfo onClose={onClose} clienteId={selectedUser!?.id_cliente} />
         </ModalContent>
