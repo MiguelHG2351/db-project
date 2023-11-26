@@ -26,7 +26,7 @@ function ModalForm({ user: selectedUser, onClose }: { user: any, onClose: () => 
     // avoid send empty data
     if (errors.nombre) return
     console.log('no paso')
-    mutate({ id: selectedUser!.id_cliente, nombre: data.nombre }, {
+    mutate({ id: selectedUser!.id_cliente, nombre: data.nombre, telefono: data.telefono, apellido: data.apellido  }, {
       onSuccess: () => {
         utils.getAllClientes.invalidate()
         utils.getCliente.invalidate()

@@ -50,6 +50,12 @@ export default function Sidebar() {
                 Egresos
             </Link>
           </li>
+          <li>
+            <Link href="/egresos" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
+                <i className="fa fa-user-shield text-white before:align-middle"></i>
+                Empleados
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

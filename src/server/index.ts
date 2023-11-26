@@ -48,6 +48,8 @@ export const appRouter = router({
   editUser: publicProcedure.input(
     z.object({
       nombre: z.string(),
+      apellido: z.string().optional(),
+      telefono: z.string(),
       id: z.number()
     }),
   ).mutation(async ({ input }) => {
@@ -56,12 +58,40 @@ export const appRouter = router({
         id_cliente: input.id
       },
       data: {
-        nombre: input.nombre
+        nombre: input.nombre,
+        apellido: input.apellido,
+        telefono: input.telefono,
+        
       }
     });
 
     return user;
-  })
+  }),
+  getDireccionesByClient: publicProcedure.input(
+    z.object({
+      id: z.number()
+      }),
+  ).query(async ({ input }) => {
+    const data = await prisma.direccion.findMany({
+      where: {
+        id_cliente: input.id,
+      },
+      include: {
+        cliente: true
+      }
+    });
+    return data;
+  }),
+  getAllServicios: publicProcedure.query(async () => {
+    const data = await prisma.servicio.findMany({
+      include: {
+        cliente: true,
+        tiposervicio: true,
+        equipocliente: true
+      }
+    });
+    return data;
+  }),
 });
 
 export type AppRouter = typeof appRouter;

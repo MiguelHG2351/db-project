@@ -1,5 +1,5 @@
 'use client'
-import React, { SVGProps } from "react";
+import React from "react";
 import {
   Table,
   TableHeader,
@@ -18,16 +18,10 @@ import {
   SortDescriptor,
   Modal, 
   ModalContent, 
-  ModalHeader, 
-  ModalBody, 
   useDisclosure,
-  getKeyValue,
-  ModalFooter,
 } from "@nextui-org/react";
 
 import { RouterOutputs } from "@/server";
-
-import { useForm } from "react-hook-form";
 
 import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
@@ -35,6 +29,7 @@ import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icon
 import { ExcelIcon } from "../icons/ExcelIcon";
 import { ModalEditClienteInfo } from "../Modal/EditClienteInfo";
 import { ModalShowClienteEquipos } from "../Modal/ShowEquipos";
+import { ModalShowDireccionesCliente } from "../Modal/ShowDirecciones";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -71,6 +66,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
   
   const { isOpen: isOpenModalEdit, onOpen: onOpenModalEdit, onOpenChange: onOpenChangeModalEdit, onClose: onCloseEdit } = useDisclosure();
   const { isOpen: isOpenModalEquipos, onOpen: onOpenModalEquipos, onOpenChange: onOpenChangeModalEquipos, onClose: onCloseEquipos } = useDisclosure();
+  const { isOpen: isOpenModalDirecciones, onOpen: onOpenModalDirecciones, onOpenChange: onOpenChangeModalDirecciones, onClose: onCloseDirecciones } = useDisclosure();
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
@@ -169,8 +165,11 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
                   onOpenModalEdit()
                 }}>Editar</DropdownItem>
                 <DropdownItem aria-label="Mostrar servicios">Ver servicios</DropdownItem>
-                <DropdownItem aria-label="Mostrar direcciones">Ver Direcciones</DropdownItem>
-                <DropdownItem aria-label="Mostrar equipos"onClick={() => {
+                <DropdownItem aria-label="Mostrar direcciones" onClick={() => {
+                  setSelectedUser(user)
+                  onOpenModalDirecciones()
+                }}>Ver Direcciones</DropdownItem>
+                <DropdownItem aria-label="Mostrar equipos" onClick={() => {
                   setSelectedUser(user)
                   onOpenModalEquipos()
                 }}>Ver Equipos</DropdownItem>
@@ -387,60 +386,16 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
             <ModalShowClienteEquipos onClose={onCloseEquipos} clienteId={selectedUser!?.id_cliente} />
         </ModalContent>
       </Modal>
+      <Modal isOpen={isOpenModalEquipos} onOpenChange={onOpenChangeModalEquipos}>
+        <ModalContent>
+            <ModalShowClienteEquipos onClose={onCloseEquipos} clienteId={selectedUser!?.id_cliente} />
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isOpenModalDirecciones} onOpenChange={onOpenChangeModalDirecciones}>
+        <ModalContent>
+            <ModalShowDireccionesCliente onClose={onCloseDirecciones} clienteId={selectedUser!?.id_cliente} />
+        </ModalContent>
+      </Modal>
     </>
   );
 }
-
-function ModalEquipoInfo({ selectedUser, isOpen, onOpenChange }: { selectedUser: User | null, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
-  const equipos = selectedUser?.equipocliente.map(equipo => ({...equipo, "tipo": equipo.tipoequipo.tipo}))
-
-  const columns = [
-    {
-      key: "id_equipocliente",
-      label: "ID",
-    },
-    {
-      key: "numerodeserie",
-      label: "SERIE",
-    },
-    {
-      key: "tipo",
-      label: "TIPO",
-    },
-  ]
-  
-  return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="flex flex-col gap-1">Equipos del cliente: {selectedUser?.nombre}</ModalHeader>
-            <ModalBody>
-              <Table aria-label="Example table with dynamic content">
-                <TableHeader columns={columns}>
-                  {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-                </TableHeader>
-                <TableBody items={equipos}>
-                  {(item) => (
-                    <TableRow key={item.id_equipocliente}>
-                      {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-              
-            </ModalBody>
-            <ModalFooter>
-              <Button type="button" color="danger" variant="light" onPress={() => {
-                onClose()
-              }}>
-                Close
-              </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
-  )
-}
-

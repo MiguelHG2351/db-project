@@ -68,7 +68,7 @@ export function ModalShowClienteEquipos({ clienteId, onClose }: { clienteId: num
               <TableHeader columns={columns}>
                 {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
               </TableHeader>
-              <TableBody items={cliente?.equipocliente}>
+              <TableBody items={cliente!.equipocliente}>
                 {(item) => (
                   <TableRow key={item.id_equipocliente}>
                     {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
