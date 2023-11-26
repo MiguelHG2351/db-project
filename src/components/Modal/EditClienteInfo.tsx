@@ -1,7 +1,7 @@
 'use client'
 import { trpc } from "@/app/_trpc/client";
 import { useForm } from 'react-hook-form';
-import { Button, Input, ModalBody, ModalHeader } from '@nextui-org/react';
+import { Button, Input, Link, ModalBody, ModalHeader } from '@nextui-org/react';
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
 
@@ -76,6 +76,9 @@ function ModalForm({ user: selectedUser, onClose }: { user: any, onClose: () => 
           {...register('telefono')}
           isDisabled={isUpdating}
         />
+        <Link color="primary" showAnchorIcon href={`/clientes/${selectedUser?.id_cliente}`}>
+          Mas opciones
+        </Link>
       <div className="flex justify-end pb-2 pt-3">
         <Button isDisabled={isUpdating} type="button" color="danger" variant="light" onPress={() => {
           reset()

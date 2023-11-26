@@ -60,7 +60,7 @@ export function ModalShowClienteEquipos({ clienteId, onClose }: { clienteId: num
 
   return (
     <>
-      <ModalHeader className="flex flex-col gap-1">Equipos del cliente</ModalHeader>
+      <ModalHeader className="flex flex-col gap-1">Equipos del cliente: {cliente?.nombre}</ModalHeader>
       <ModalBody>
         {
           isLoadingCliente ? <p>Loading...</p> :
