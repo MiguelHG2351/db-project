@@ -1,8 +1,52 @@
+'use client'
+
+import { usePathname } from "next/navigation";
 import { Divider } from "@nextui-org/react";
 import Image from "next/image";
 import Link from "next/link";
 
+const routes = [
+  {
+    name: 'Clientes',
+    icon: 'fa fa-user',
+    path: '/clientes'
+  },
+  {
+    name: 'Servicios',
+    icon: 'fa fa-wrench',
+    path: '/servicios'
+  },
+  {
+    name: 'Proveedores',
+    icon: 'fa fa-user-tie',
+    path: '/proveedores'
+  },
+  {
+    name: 'Productos',
+    icon: 'fa fa-box-open',
+    path: '/productos'
+  },
+  {
+    name: 'Ingresos',
+    icon: 'fa fa-money-bill',
+    path: '/ingresos'
+  },
+  {
+    name: 'Egresos',
+    icon: 'fa fa-money-bill',
+    path: '/egresos'
+  },
+  {
+    name: 'Empleados',
+    icon: 'fa fa-user-shield',
+    path: '/empleados'
+  }
+]
+
 export default function Sidebar() {
+  const pathname = usePathname()
+  console.log(pathname)
+
   return (
     <div className="h-screen bg-light-blue">
       <Link href="/" className="flex px-4 items-center justify-start gap-x-4 py-4">
