@@ -45,7 +45,6 @@ const routes = [
 
 export default function Sidebar() {
   const pathname = usePathname()
-  console.log(pathname)
 
   return (
     <div className="h-screen bg-light-blue">
@@ -58,48 +57,24 @@ export default function Sidebar() {
       <Divider orientation="horizontal" className="bg-celeste" />
       <div className="p-4">
         <ul className="flex flex-col gap-y-2">
-          <li>
-            <Link href="/clientes" className="bg-celeste/20 text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md border border-dark-blue/80 transition-transform hover:scale-95">
-                <i className="fa fa-user text-white before:align-middle"></i>
-                Clientes
-            </Link>
-          </li>
-          <li>
-            <Link href="/servicios" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
-                <i className="fa fa-wrench text-white before:align-middle"></i>
-                Servicios
-            </Link>
-          </li>
-          <li>
-            <Link href="/proveedores" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
-                <i className="fa fa-user-tie text-white before:align-middle"></i>
-                Proveedores
-            </Link>
-          </li>
-          <li>
-            <Link href="/productos" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
-                <i className="fa fa-box-open text-white before:align-middle"></i>
-                Productos
-            </Link>
-          </li>
-          <li>
-            <Link href="/ingresos" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
-                <i className="fa fa-money-bill text-white before:align-middle"></i>
-                Ingresos
-            </Link>
-          </li>
-          <li>
-            <Link href="/egresos" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
-                <i className="fa fa-money-bill text-white before:align-middle"></i>
-                Egresos
-            </Link>
-          </li>
-          <li>
-            <Link href="/egresos" className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
-                <i className="fa fa-user-shield text-white before:align-middle"></i>
-                Empleados
-            </Link>
-          </li>
+          {
+            routes.map(route => (
+              <li key={route.path}>
+                {
+                  pathname === route.path ? (
+                  <Link href={route.path} className="bg-celeste/20 border border-dark-blue/80 text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
+                    <i className={`${route.icon} text-white before:align-middle`}></i>
+                    {route.name}
+                  </Link>
+                  ) :
+                  <Link href={route.path} className="text-white w-full flex justify-start items-center gap-x-4 py-2 px-2 rounded-md transition-transform hover:scale-95">
+                    <i className={`${route.icon} text-white before:align-middle`}></i>
+                    {route.name}
+                  </Link>
+                }
+              </li>
+            ))
+          }
         </ul>
       </div>
     </div>
