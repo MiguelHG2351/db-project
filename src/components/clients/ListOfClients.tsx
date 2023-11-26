@@ -21,6 +21,8 @@ import {
   ModalHeader, 
   ModalBody, 
   useDisclosure,
+  getKeyValue,
+  ModalFooter,
 } from "@nextui-org/react";
 
 import { RouterOutputs } from "@/server";
@@ -40,8 +42,8 @@ const columns = [
   {name: "Id", uid: "id_cliente", sortable: true},
   {name: "Nombre", uid: "nombre", sortable: true},
   {name: "Apellido", uid: "apellido", sortable: true},
-  {name: "Telefono", uid: "telefono", sortable: true},
-  {name: "Tipo de cliente", uid: "tipo"},
+  {name: "Telefono", uid: "telefono"},
+  {name: "Tipo de cliente", uid: "tipo", sortable: true},
   {name: "Acciones", uid: "actions"},
   // {name: "equipos", uid: "email"},
 ];
@@ -65,7 +67,8 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
 
   // type User = User;
   
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen: isEditModalOpen, onOpen: onEditModalOpen, onOpenChange: onEditOpenModalChange } = useDisclosure();
+  const { isOpen: isEquipoModalOpen, onOpen: onEquipoModalOpen, onOpenChange: onEquipoOpenModalChange } = useDisclosure();
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
@@ -158,12 +161,18 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
                   <VerticalDotsIcon className="text-default-300" />
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu>
+              <DropdownMenu aria-label="Lista de opciones">
                 <DropdownItem onClick={() => {
                   setSelectedUser(user)
-                  onOpen()
+                  onEditModalOpen()
                 }}>Editar</DropdownItem>
-                <DropdownItem>Borrar</DropdownItem>
+                <DropdownItem aria-label="Mostrar servicios">Ver más info</DropdownItem>
+                <DropdownItem aria-label="Mostrar servicios">Ver servicios</DropdownItem>
+                <DropdownItem aria-label="Mostrar direcciones">Ver Direcciones</DropdownItem>
+                <DropdownItem aria-label="Mostrar equipos"onClick={() => {
+                  setSelectedUser(user)
+                  onEquipoModalOpen()
+                }}>Ver Equipos</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -367,20 +376,73 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
           }}
         </TableBody>
       </Table>
-      <ModalInfo isOpen={isOpen} onOpenChange={onOpenChange} selectedUser={selectedUser} />
+      <ModalEquipoInfo isOpen={isEquipoModalOpen} onOpenChange={onEquipoModalOpen} selectedUser={selectedUser} />
+      <ModalEditInfo isOpen={isEditModalOpen} onOpenChange={onEditModalOpen} selectedUser={selectedUser} />
     </>
   );
 }
 
+function ModalEquipoInfo({ selectedUser, isOpen, onOpenChange }: { selectedUser: User | null, isOpen: boolean, onOpenChange: (open: boolean) => void }) {
+  const equipos = selectedUser?.equipocliente.map(equipo => ({...equipo, "tipo": equipo.tipoequipo.tipo}))
 
-function ModalInfo({ isOpen, onOpenChange, selectedUser }: { isOpen: boolean, onOpenChange: (open: boolean) => void, selectedUser: User | null  }) {
+  const columns = [
+    {
+      key: "id_equipocliente",
+      label: "ID",
+    },
+    {
+      key: "numerodeserie",
+      label: "SERIE",
+    },
+    {
+      key: "tipo",
+      label: "TIPO",
+    },
+  ]
+  
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Equipos del cliente: {selectedUser?.nombre}</ModalHeader>
+            <ModalBody>
+              <Table aria-label="Example table with dynamic content">
+                <TableHeader columns={columns}>
+                  {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                </TableHeader>
+                <TableBody items={equipos}>
+                  {(item) => (
+                    <TableRow key={item.id_equipocliente}>
+                      {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+              
+            </ModalBody>
+            <ModalFooter>
+              <Button type="button" color="danger" variant="light" onPress={() => {
+                onClose()
+              }}>
+                Close
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  )
+}
+
+function ModalEditInfo({ isOpen, onOpenChange, selectedUser }: { isOpen: boolean, onOpenChange: (open: boolean) => void, selectedUser: User | null  }) {
   'use client'
   const { mutate, isLoading: isUpdating } = trpc.editUser.useMutation();
   const utils = trpc.useUtils()
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       nombre: selectedUser?.nombre,
-      telefono: selectedUser?.telefono
+      apellido: selectedUser?.apellido
     }
   })
 
@@ -411,14 +473,17 @@ function ModalInfo({ isOpen, onOpenChange, selectedUser }: { isOpen: boolean, on
                     isDisabled={isUpdating}
                     />
                 <Input
-                    label="Telefono"
-                    placeholder="Ingresa su nuevo telefono"
+                    label="Apellido"
+                    placeholder="Ingresa su apellido"
                     variant="bordered"
-                    {...register('telefono')}
+                    {...register('apellido')}
                     isDisabled={isUpdating}
                   />
                 <div className="flex justify-end pb-2 pt-3">
-                  <Button isDisabled={isUpdating} type="button" color="danger" variant="light" onPress={onClose}>
+                  <Button isDisabled={isUpdating} type="button" color="danger" variant="light" onPress={() => {
+                    reset()
+                    onClose()
+                  }}>
                     Close
                   </Button>
                   <Button isDisabled={isUpdating} type="submit" color="primary" onPress={() => {

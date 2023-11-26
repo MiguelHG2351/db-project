@@ -16,7 +16,12 @@ export const appRouter = router({
     // const data = await prisma.cliente.findMany();
     return await prisma.cliente.findMany({
       include: {
-        tipocliente: true
+        tipocliente: true,
+        equipocliente: {
+          include: {
+            tipoequipo: true
+          }
+        }
       }
     });
   }),
