@@ -96,6 +96,19 @@ export const appRouter = router({
     const data = await prisma.proveedor.findMany();
     return data;
   }),
+  getAllProductos: publicProcedure.query(async () => {
+    const data = await prisma.producto.findMany({
+      include: {
+        categoria: true,
+        suministro: {
+          include: {
+            proveedor: true
+          }
+        }
+      }
+    });
+    return data;
+  }),
 });
 
 export type AppRouter = typeof appRouter;

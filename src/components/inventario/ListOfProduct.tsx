@@ -30,19 +30,21 @@ function capitalize(str: string) {
 }
 
 const columns = [
-  {name: "Id", uid: "id_proveedor", sortable: true},
+  {name: "Id", uid: "id_producto", sortable: true},
   {name: "Nombre", uid: "nombre", sortable: true},
-  {name: "Telefono", uid: "telefono", sortable: true},
+  {name: "Proveedor", uid: "proveedor", sortable: true},
+  {name: "Descripción", uid: "descripcion"},
+  {name: "Cateogoría", uid: "categoria", sortable: true},
   {name: "Acciones", uid: "actions"},
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ['id_proveedor', "nombre", "telefono", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ['id_producto', "nombre", "proveedor", "categoria", "actions"];
 
-type Proveedor = RouterOutputs["getAllProveedor"][0];
+type Producto = RouterOutputs["getAllProductos"][0];
 
 
-export default function ListOfProveedores({ initialServicios }: { initialServicios: Awaited<ReturnType<(typeof serverClient)['getAllProveedor']>> })  {
-  const getServicios = trpc.getAllProveedor.useQuery(undefined,{
+export default function ListOfProductos({ initialServicios }: { initialServicios: Awaited<ReturnType<(typeof serverClient)['getAllProductos']>> })  {
+  const getServicios = trpc.getAllProductos.useQuery(undefined,{
     initialData: initialServicios,
     refetchOnMount: false,
     refetchOnReconnect: true
@@ -53,7 +55,7 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-    column: "id_proveedor",
+    column: "id_producto",
     direction: "ascending",
   });
 
@@ -71,9 +73,9 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
     let filteredServices = [...getServicios.data];
 
     if (hasSearchFilter) {
-      // filteredServices = filteredServices.filter((user) =>
-      //   user..toLowerCase().includes(filterValue.toLowerCase()),
-      // );
+      filteredServices = filteredServices.filter((producto) =>
+      producto.nombre.toLowerCase().includes(filterValue.toLowerCase()),
+      );
     }
 
     return filteredServices;
@@ -89,28 +91,40 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: Proveedor, b: Proveedor) => {
-      const first = a[sortDescriptor.column as keyof Proveedor] as number;
-      const second = b[sortDescriptor.column as keyof Proveedor] as number;
+    return [...items].sort((a: Producto, b: Producto) => {
+      const first = a[sortDescriptor.column as keyof Producto] as number;
+      const second = b[sortDescriptor.column as keyof Producto] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((proveedor: Proveedor, columnKey: React.Key) => {
+  const renderCell = React.useCallback((producto: Producto, columnKey: React.Key) => {
 
     switch (columnKey) {
       case "nombre":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-tiny capitalize text-default-400">{proveedor.nombre}</p>
+            <p className="text-bold text-tiny capitalize text-default-400">{producto.nombre}</p>
           </div>
         );
-      case "telefono":
+      case "proveedor":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-tiny capitalize text-default-400">{proveedor.telefono}</p>
+            <p className="text-bold text-tiny capitalize text-default-400">Pedro</p>
+          </div>
+        );
+      case "descripcion":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-tiny capitalize text-default-400">{producto.descripcion}</p>
+          </div>
+        );
+      case "categoria":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-tiny capitalize text-default-400">{producto.categoria.nombre}</p>
           </div>
         );
       case "actions":
@@ -135,7 +149,7 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
           </div>
         );
       default:
-        return proveedor.id_proveedor;
+        return producto.id_producto;
     }
   }, []);
 
@@ -213,12 +227,12 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
               </DropdownMenu>
             </Dropdown>
             <Button color="primary" endContent={<PlusIcon />}>
-              Agregar servicio
+              Agregar producto
             </Button>
           </div>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total: {getServicios.data.length} servicios</span>
+          <span className="text-default-400 text-small">Total: {getServicios.data.length} produtos</span>
           <label className="flex items-center text-default-400 text-small">
             Filas por página:
             <select
@@ -304,7 +318,7 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
         <TableBody emptyContent={"No users found"} items={sortedItems}>
           {(item) => {
             return (
-              <TableRow key={item.id_proveedor}>
+              <TableRow key={item.id_producto}>
                 {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
               </TableRow>
             );

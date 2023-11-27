@@ -22,9 +22,9 @@ const routes = [
     path: '/proveedores'
   },
   {
-    name: 'Productos',
+    name: 'Inventario',
     icon: 'fa fa-box-open',
-    path: '/productos'
+    path: '/inventario'
   },
   {
     name: 'Ingresos',
