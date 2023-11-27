@@ -24,36 +24,39 @@ import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
 import { ExcelIcon } from "../icons/ExcelIcon";
+import { DateInputFormat } from "@/utils/Date";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 const columns = [
-  {name: "Id", uid: "id_proveedor", sortable: true},
-  {name: "Nombre", uid: "nombre", sortable: true},
-  {name: "Telefono", uid: "telefono", sortable: true},
+  {name: "Id", uid: "id_ingreso", sortable: true},
+  {name: "Detalles", uid: "detalles", sortable: true},
+  {name: "Monto", uid: "monto", sortable: true},
+  {name: "Fecha", uid: "fecha", sortable: true},
   {name: "Acciones", uid: "actions"},
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ['id_proveedor', "nombre", "telefono", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ['id_ingreso', "detalles", "monto", "fecha", "actions"];
 
-type Proveedor = RouterOutputs["getAllProveedor"][0];
+type Ingreso = RouterOutputs["getAllIngresos"][0];
 
 
-export default function ListOfProveedores({ initialServicios }: { initialServicios: Awaited<ReturnType<(typeof serverClient)['getAllProveedor']>> })  {
-  const getServicios = trpc.getAllProveedor.useQuery(undefined,{
+export default function ListOfIngresos({ initialServicios }: { initialServicios: Awaited<ReturnType<(typeof serverClient)['getAllIngresos']>> })  {
+  const getServicios = trpc.getAllIngresos.useQuery(undefined,{
     initialData: initialServicios,
     refetchOnMount: false,
     refetchOnReconnect: true
   });
+  console.log(getServicios.data)
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-    column: "id_proveedor",
+    column: "id_ingreso",
     direction: "ascending",
   });
 
@@ -89,28 +92,35 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
   }, [page, filteredItems, rowsPerPage]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: Proveedor, b: Proveedor) => {
-      const first = a[sortDescriptor.column as keyof Proveedor] as number;
-      const second = b[sortDescriptor.column as keyof Proveedor] as number;
+    return [...items].sort((a: Ingreso, b: Ingreso) => {
+      const first = a[sortDescriptor.column as keyof Ingreso] as number;
+      const second = b[sortDescriptor.column as keyof Ingreso] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback((proveedor: Proveedor, columnKey: React.Key) => {
+  const renderCell = React.useCallback((ingreso: Ingreso, columnKey: React.Key) => {
 
     switch (columnKey) {
-      case "nombre":
+      case "detalles":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-tiny capitalize text-default-400">{proveedor.nombre}</p>
+            <p className="text-bold text-tiny capitalize text-default-400">{ingreso.detalles}</p>
           </div>
         );
-      case "telefono":
+      case "monto":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-tiny capitalize text-default-400">{proveedor.telefono}</p>
+            <p className="text-bold text-tiny capitalize text-default-400">C${ingreso.monto}</p>
+          </div>
+        );
+      case "fecha":
+        console.log(ingreso.fecha, ingreso.fecha.toString())
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-tiny capitalize text-default-400">{`${DateInputFormat(ingreso.fecha)}`}</p>
           </div>
         );
       case "actions":
@@ -125,13 +135,17 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
               <DropdownMenu aria-label="Lista de opciones">
                 <DropdownItem onClick={() => {
                 }}>Editar</DropdownItem>
-                <DropdownItem aria-label="Mostrar servicios">Ver suministros</DropdownItem>
+                <DropdownItem aria-label="Mostrar servicios">Ver servicios</DropdownItem>
+                <DropdownItem aria-label="Mostrar direcciones" onClick={() => {
+                }}>Ver Direcciones</DropdownItem>
+                <DropdownItem aria-label="Mostrar equipos" onClick={() => {
+                }}>Ver Equipos</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
         );
       default:
-        return proveedor.id_proveedor;
+        return ingreso.id_ingreso;
     }
   }, []);
 
@@ -209,7 +223,7 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
               </DropdownMenu>
             </Dropdown>
             <Button color="primary" endContent={<PlusIcon />}>
-              Agregar servicio
+              Agregar inventario (servicio)
             </Button>
           </div>
         </div>
@@ -297,10 +311,10 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No users found"} items={sortedItems}>
+        <TableBody emptyContent={"Sin inventario"} items={sortedItems}>
           {(item) => {
             return (
-              <TableRow key={item.id_proveedor}>
+              <TableRow key={item.id_ingreso}>
                 {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
               </TableRow>
             );

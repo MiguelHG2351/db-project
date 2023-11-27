@@ -20,15 +20,15 @@ export default function Home() {
           <h2 className='font-bold'>Integrantes:</h2>
           <ul className='flex flex-col gap-y-4'>
             <li className='flex justify-between items-center'>
-            <p className='mt-6 font-medium'>Miguel Angel Hernández Gaitan</p>
+            <p className='font-medium'>Miguel Angel Hernández Gaitan</p>
             <p>2020-1049U</p>
             </li>
             <li className='flex justify-between items-center'>
-            <p className='mt-6 font-medium'>Miguel Angel Hernández Gaitan</p>
+            <p className='font-medium'>Miguel Angel Hernández Gaitan</p>
             <p>2020-1049U</p>
             </li>
             <li className='flex justify-between items-center'>
-            <p className='mt-6 font-medium'>Miguel Angel Hernández Gaitan</p>
+            <p className='font-medium'>Miguel Angel Hernández Gaitan</p>
             <p>2020-1049U</p>
             </li>
           </ul>

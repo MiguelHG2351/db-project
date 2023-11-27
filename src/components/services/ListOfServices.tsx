@@ -350,7 +350,7 @@ export default function ListOfServices({ initialServicios }: { initialServicios:
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No users found"} items={sortedItems}>
+        <TableBody emptyContent={"Sin servicios"} items={sortedItems}>
           {(item) => {
             return (
               <TableRow key={item.id_servicio}>

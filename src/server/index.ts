@@ -109,6 +109,10 @@ export const appRouter = router({
     });
     return data;
   }),
+  getAllIngresos: publicProcedure.query(async () => {
+    const data = await prisma.ingreso.findMany();
+    return data;
+  }),
 });
 
 export type AppRouter = typeof appRouter;
