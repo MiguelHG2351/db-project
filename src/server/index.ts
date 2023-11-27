@@ -92,6 +92,10 @@ export const appRouter = router({
     });
     return data;
   }),
+  getAllProveedor: publicProcedure.query(async () => {
+    const data = await prisma.proveedor.findMany();
+    return data;
+  }),
 });
 
 export type AppRouter = typeof appRouter;
