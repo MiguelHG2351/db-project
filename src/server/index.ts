@@ -175,6 +175,14 @@ export const appRouter = router({
     const data = await prisma.ingreso.findMany();
     return data;
   }),
+  getAllEmpleado: publicProcedure.query(async () => {
+    const data = await prisma.empleado.findMany({
+      include: {
+        cargo: true
+      }
+    });
+    return data;
+  }),
 });
 
 export type AppRouter = typeof appRouter;
