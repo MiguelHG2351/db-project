@@ -96,6 +96,20 @@ export const appRouter = router({
     const data = await prisma.proveedor.findMany();
     return data;
   }),
+  createProveedor: publicProcedure.input(
+    z.object({
+      nombre: z.string(),
+      telefono: z.string(),
+    }),
+  ).mutation(async ({ input }) => {
+    const data = await prisma.proveedor.create({
+      data: {
+        nombre: input.nombre,
+        telefono: input.telefono,
+      }
+    });
+    return data;
+  }),
   getAllProductos: publicProcedure.query(async () => {
     const data = await prisma.producto.findMany({
       include: {

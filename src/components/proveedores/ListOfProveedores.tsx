@@ -16,6 +16,9 @@ import {
   Pagination,
   Selection,
   SortDescriptor,
+  Modal,
+  ModalContent,
+  useDisclosure,
 } from "@nextui-org/react";
 
 import { RouterOutputs } from "@/server";
@@ -24,6 +27,7 @@ import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
 import { ExcelIcon } from "../icons/ExcelIcon";
+import ModalAddProveedor from "../Modal/AddProveedor";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -48,6 +52,7 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
     refetchOnReconnect: true
   });
 
+  const { isOpen: isOpenModalAdd, onOpen: onOpenModalAdd, onOpenChange: onOpenChangeModalAdd, onClose: onCloseAdd } = useDisclosure();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -208,8 +213,8 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
-              Agregar servicio
+            <Button color="primary" onPress={onOpenModalAdd} endContent={<PlusIcon />}>
+              Agregar proveedores
             </Button>
           </div>
         </div>
@@ -297,7 +302,7 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No users found"} items={sortedItems}>
+        <TableBody emptyContent={"Sin proveedores"} items={sortedItems}>
           {(item) => {
             return (
               <TableRow key={item.id_proveedor}>
@@ -307,6 +312,11 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
           }}
         </TableBody>
       </Table>
+      <Modal isOpen={isOpenModalAdd} onOpenChange={onOpenChangeModalAdd}>
+        <ModalContent>
+          <ModalAddProveedor onClose={onCloseAdd} />
+        </ModalContent>
+      </Modal>
     </>
   );
 }
