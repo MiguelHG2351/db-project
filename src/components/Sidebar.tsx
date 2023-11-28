@@ -12,6 +12,11 @@ const routes = [
     path: '/clientes'
   },
   {
+    name: 'Equipos',
+    icon: 'fa fa-wind',
+    path: '/equipos'
+  },
+  {
     name: 'Servicios',
     icon: 'fa fa-wrench',
     path: '/servicios'

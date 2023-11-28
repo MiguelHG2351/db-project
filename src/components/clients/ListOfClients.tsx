@@ -30,6 +30,7 @@ import { ExcelIcon } from "../icons/ExcelIcon";
 import { ModalEditClienteInfo } from "../Modal/EditClienteInfo";
 import { ModalShowClienteEquipos } from "../Modal/ShowEquipos";
 import { ModalShowDireccionesCliente } from "../Modal/ShowDirecciones";
+import ModalAddCliente from "../Modal/AddCliente";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -67,6 +68,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
   const { isOpen: isOpenModalEdit, onOpen: onOpenModalEdit, onOpenChange: onOpenChangeModalEdit, onClose: onCloseEdit } = useDisclosure();
   const { isOpen: isOpenModalEquipos, onOpen: onOpenModalEquipos, onOpenChange: onOpenChangeModalEquipos, onClose: onCloseEquipos } = useDisclosure();
   const { isOpen: isOpenModalDirecciones, onOpen: onOpenModalDirecciones, onOpenChange: onOpenChangeModalDirecciones, onClose: onCloseDirecciones } = useDisclosure();
+  const { isOpen: isOpenModalAddCliente, onOpen: onOpenModalAddCliente, onOpenChange: onOpenChangeModalAddCliente, onClose: onCloseAddCliente } = useDisclosure();
   const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
@@ -276,8 +278,8 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
-              Add New
+            <Button color="primary" endContent={<PlusIcon />} onPress={onOpenModalAddCliente} >
+              Nuevo cliente
             </Button>
           </div>
         </div>
@@ -394,6 +396,11 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
       <Modal isOpen={isOpenModalDirecciones} onOpenChange={onOpenChangeModalDirecciones}>
         <ModalContent>
             <ModalShowDireccionesCliente onClose={onCloseDirecciones} clienteId={selectedUser!?.id_cliente} />
+        </ModalContent>
+      </Modal>
+      <Modal isOpen={isOpenModalAddCliente} onOpenChange={onOpenChangeModalAddCliente}>
+        <ModalContent>
+            <ModalAddCliente onClose={onCloseAddCliente} />
         </ModalContent>
       </Modal>
     </>

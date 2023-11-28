@@ -67,6 +67,35 @@ export const appRouter = router({
 
     return user;
   }),
+  getAllTipoCliente: publicProcedure.query(async () => {
+    const data = await prisma.tipocliente.findMany();
+    return data;
+  }),
+  createCliente: publicProcedure.input(
+    z.object({
+      nombre: z.string(),
+      apellido: z.string().optional(),
+      telefono: z.string(),
+      direcciones: z.array(z.object({ direccion: z.string()  })),
+      id_tipocliente: z.number(),
+    }),
+  ).mutation(async ({ input }) => {
+    const user = await prisma.cliente.create({
+      data: {
+        nombre: input.nombre,
+        apellido: input.apellido,
+        telefono: input.telefono,
+        id_tipocliente: input.id_tipocliente,
+        direccion: {
+          createMany: {
+            data: input.direcciones
+          }
+        }
+      }
+    });
+
+    return user;
+  }),
   getDireccionesByClient: publicProcedure.input(
     z.object({
       id: z.number()
