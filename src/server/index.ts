@@ -123,6 +123,10 @@ export const appRouter = router({
     });
     return data;
   }),
+  getAllCategorias: publicProcedure.query(async () => {
+    const data = await prisma.categoria.findMany();
+    return data;
+  }),
   addProducto: publicProcedure.input(
     z.object({
       nombre: z.string(),

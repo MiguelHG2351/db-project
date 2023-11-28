@@ -117,7 +117,7 @@ export default function ListOfProductos({ initialServicios }: { initialServicios
       case "proveedor":
         return (
           <div className="flex flex-col">
-            <p className="text-bold text-tiny capitalize text-default-400">Pedro</p>
+            <p className="text-bold text-tiny capitalize text-default-400">{ producto.suministro?.proveedor.nombre }</p>
           </div>
         );
       case "descripcion":
@@ -281,10 +281,10 @@ export default function ListOfProductos({ initialServicios }: { initialServicios
         />
         <div className="hidden sm:flex w-[30%] justify-end gap-2">
           <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onPreviousPage}>
-            Previous
+            Regresar
           </Button>
           <Button isDisabled={pages === 1} size="sm" variant="flat" onPress={onNextPage}>
-            Next
+            Siguiente
           </Button>
         </div>
       </div>

@@ -6,6 +6,7 @@ import './globals.css'
 import { AppProviders } from '@/components/Providers'
 import Sidebar from '@/components/Sidebar'
 import SectionInfo from '@/components/SectionInfo'
+import ToastComponent from '@/components/Toast'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -33,6 +34,7 @@ export default function RootLayout({
               { children }
             </section>
           </div>
+          <ToastComponent />
         </AppProviders>
       </body>
     </html>

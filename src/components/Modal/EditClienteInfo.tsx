@@ -3,6 +3,7 @@ import { trpc } from "@/app/_trpc/client";
 import { useForm } from 'react-hook-form';
 import { Button, Input, Link, ModalBody, ModalHeader } from '@nextui-org/react';
 import { yupResolver } from "@hookform/resolvers/yup"
+import { successNotification } from "../Notifications";
 import * as yup from "yup"
 
 export function ModalEditClienteInfo({ clienteId, onClose }: { clienteId: number, onClose: () => void }) {
@@ -30,6 +31,7 @@ function ModalForm({ user: selectedUser, onClose }: { user: any, onClose: () => 
       onSuccess: () => {
         utils.getAllClientes.invalidate()
         utils.getCliente.invalidate()
+        successNotification("Cliente actualizado")
         onClose()
         reset()
       }
