@@ -93,9 +93,8 @@ model ingreso {
 
 model inventario {
   id_inventario Int        @id @default(autoincrement())
-  id_producto   Int        @unique
   stock         Int
-  producto      producto   @relation(fields: [id_producto], references: [id_producto], onUpdate: NoAction)
+  producto      producto?
   recursos      recursos[]
 }
 
@@ -116,13 +115,14 @@ model pagoimpuesto {
 }
 
 model producto {
-  id_producto  Int          @id @default(autoincrement())
-  id_categoria Int
-  nombre       String       @db.VarChar(255)
-  descripcion  String?      @db.VarChar(255)
-  inventario   inventario?
-  categoria    categoria    @relation(fields: [id_categoria], references: [id_categoria], onUpdate: NoAction)
-  suministro   suministro[]
+  id_producto   Int          @id @default(autoincrement())
+  id_categoria  Int
+  nombre        String       @db.VarChar(255)
+  descripcion   String?      @db.VarChar(255)
+  id_inventario Int          @unique
+  categoria     categoria    @relation(fields: [id_categoria], references: [id_categoria], onUpdate: NoAction)
+  inventario    inventario   @relation(fields: [id_inventario], references: [id_inventario], onUpdate: NoAction)
+  suministro    suministro?
 }
 
 model proveedor {
@@ -158,23 +158,23 @@ model servicio {
   id_recursos      Int
   id_ingreso       Int
   id_reporte       Int
-  ingreso          ingreso       @relation(fields: [id_ingreso], references: [id_ingreso], onUpdate: NoAction)
-  reporte          reporte       @relation(fields: [id_reporte], references: [id_reporte], onUpdate: NoAction)
   cliente          cliente       @relation(fields: [id_cliente], references: [id_cliente], onUpdate: NoAction)
   equipocliente    equipocliente @relation(fields: [id_equipocliente], references: [id_equipocliente], onUpdate: NoAction)
+  ingreso          ingreso       @relation(fields: [id_ingreso], references: [id_ingreso], onUpdate: NoAction)
   recursos         recursos      @relation(fields: [id_recursos], references: [id_recursos], onUpdate: NoAction)
+  reporte          reporte       @relation(fields: [id_reporte], references: [id_reporte], onUpdate: NoAction)
   tiposervicio     tiposervicio  @relation(fields: [id_tiposervicio], references: [id_tiposervicio], onUpdate: NoAction)
 }
 
 model suministro {
   id_suministro Int       @id @default(autoincrement())
   id_proveedor  Int
-  id_producto   Int
+  id_producto   Int @unique
   id_egreso     Int
   cantidad      Int
   egreso        egreso    @relation(fields: [id_egreso], references: [id_egreso], onUpdate: NoAction)
-  proveedor     proveedor @relation(fields: [id_proveedor], references: [id_proveedor], onUpdate: NoAction)
   producto      producto  @relation(fields: [id_producto], references: [id_producto], onUpdate: NoAction)
+  proveedor     proveedor @relation(fields: [id_proveedor], references: [id_proveedor], onUpdate: NoAction)
 }
 
 model tipocliente {

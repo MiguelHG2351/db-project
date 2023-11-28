@@ -123,6 +123,50 @@ export const appRouter = router({
     });
     return data;
   }),
+  addProducto: publicProcedure.input(
+    z.object({
+      nombre: z.string(),
+      stock: z.number(),
+      costo: z.number(),
+      descripcion: z.string().optional(),
+      detalles: z.string(),
+      id_categoria: z.number(),
+      id_proveedor: z.number(),
+    }),
+  ).mutation(async ({ input }) => {
+    const egreso = await prisma.egreso.create({
+      data: {
+        fecha: new Date(),
+        detalles: input.detalles,
+        monto: input.costo * input.stock,
+      }
+    });
+    
+    const producto = await prisma.producto.create({
+      data: {
+        nombre: input.nombre,
+        inventario: {
+          create: {
+            stock: input.stock
+          }
+        },
+        descripcion: input.descripcion,
+        categoria: {
+          connect: {
+            id_categoria: input.id_categoria
+          }
+        },
+        suministro: {
+          create: {
+            cantidad: input.stock,
+            id_proveedor: input.id_proveedor,
+            id_egreso: egreso.id_egreso
+          }
+        }
+      }
+    });
+    return producto;
+  }),
   getAllIngresos: publicProcedure.query(async () => {
     const data = await prisma.ingreso.findMany();
     return data;

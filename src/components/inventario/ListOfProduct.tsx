@@ -16,6 +16,9 @@ import {
   Pagination,
   Selection,
   SortDescriptor,
+  Modal,
+  ModalContent,
+  useDisclosure,
 } from "@nextui-org/react";
 
 import { RouterOutputs } from "@/server";
@@ -24,6 +27,7 @@ import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
 import { ExcelIcon } from "../icons/ExcelIcon";
+import ModalAddProducto from "../Modal/AddProducto";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -50,6 +54,7 @@ export default function ListOfProductos({ initialServicios }: { initialServicios
     refetchOnReconnect: true
   });
 
+  const { isOpen: isOpenModalAdd, onOpen: onOpenModalAdd, onOpenChange: onOpenChangeModalAdd, onClose: onCloseAdd } = useDisclosure();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -226,7 +231,7 @@ export default function ListOfProductos({ initialServicios }: { initialServicios
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
+            <Button color="primary" endContent={<PlusIcon />} onPress={onOpenModalAdd} >
               Agregar producto
             </Button>
           </div>
@@ -315,7 +320,7 @@ export default function ListOfProductos({ initialServicios }: { initialServicios
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No users found"} items={sortedItems}>
+        <TableBody emptyContent={"El inventario esta vacio"} items={sortedItems}>
           {(item) => {
             return (
               <TableRow key={item.id_producto}>
@@ -325,6 +330,11 @@ export default function ListOfProductos({ initialServicios }: { initialServicios
           }}
         </TableBody>
       </Table>
+      <Modal isOpen={isOpenModalAdd} onOpenChange={onOpenChangeModalAdd}>
+        <ModalContent>
+          <ModalAddProducto onClose={onCloseAdd} />
+        </ModalContent>
+      </Modal>
     </>
   );
 }
