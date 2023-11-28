@@ -76,9 +76,9 @@ export default function ListOfProveedores({ initialServicios }: { initialServici
     let filteredServices = [...getServicios.data];
 
     if (hasSearchFilter) {
-      // filteredServices = filteredServices.filter((user) =>
-      //   user..toLowerCase().includes(filterValue.toLowerCase()),
-      // );
+      filteredServices = filteredServices.filter((proveedor) =>
+        proveedor.nombre.toLowerCase().includes(filterValue.toLowerCase()),
+      );
     }
 
     return filteredServices;
