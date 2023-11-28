@@ -212,6 +212,15 @@ export const appRouter = router({
     });
     return data;
   }),
+  getAllEquipos: publicProcedure.query(async () => {
+    const data = await prisma.equipocliente.findMany({
+      include: {
+        cliente: true,
+        tipoequipo: true
+      }
+    });
+    return data;
+  }),
 });
 
 export type AppRouter = typeof appRouter;
