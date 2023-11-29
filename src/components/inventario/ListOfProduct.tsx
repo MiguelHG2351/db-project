@@ -36,13 +36,14 @@ function capitalize(str: string) {
 const columns = [
   {name: "Id", uid: "id_producto", sortable: true},
   {name: "Nombre", uid: "nombre", sortable: true},
+  {name: "Cantidad", uid: "cantidad", sortable: true},
   {name: "Proveedor", uid: "proveedor", sortable: true},
   {name: "Descripción", uid: "descripcion"},
   {name: "Cateogoría", uid: "categoria", sortable: true},
   {name: "Acciones", uid: "actions"},
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ['id_producto', "nombre", "proveedor", "categoria", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ['id_producto', "nombre", 'cantidad', "proveedor", "categoria", "actions"];
 
 type Producto = RouterOutputs["getAllProductos"][0];
 
@@ -112,6 +113,12 @@ export default function ListOfProductos({ initialServicios }: { initialServicios
         return (
           <div className="flex flex-col">
             <p className="text-bold text-tiny capitalize text-default-400">{producto.nombre}</p>
+          </div>
+        );
+      case "cantidad":
+        return (
+          <div className="flex flex-col">
+            <p className="text-bold text-tiny capitalize text-default-400">{producto.suministro?.cantidad}</p>
           </div>
         );
       case "proveedor":

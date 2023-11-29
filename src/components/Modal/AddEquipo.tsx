@@ -28,8 +28,6 @@ export default function ModalAddEquipo({ onClose }: {onClose: () => void}) {
     //   return
     // }
 
-    console.log('dataa:')
-    console.log(data)
     mutate({
       numerodeserie: data.num_serie, capacidad: data.capacidad, id_cliente: data.cliente - 0, id_direccion: data.direccion - 0,
       id_tipoequipo: data.tipo - 0, tamano: data.size
@@ -71,8 +69,6 @@ export default function ModalAddEquipo({ onClose }: {onClose: () => void}) {
     setIsDireccionEnabled(true)
     setCliente(e.target.value)
   }
-  console.log(errors)
-  console.log(getValues('size'))
 
   return (
     <>
@@ -180,7 +176,6 @@ export default function ModalAddEquipo({ onClose }: {onClose: () => void}) {
 }
 
 function Direcciones({ user_id, isUpdating, errors, register }: { user_id: number, isUpdating: boolean, errors: any, register: any }) {
-  console.log('user id', user_id)
   const { data: direcciones } = trpc.getDireccionesByClient.useQuery({ id: user_id - 0 })
   
   return (

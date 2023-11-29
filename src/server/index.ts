@@ -122,7 +122,11 @@ export const appRouter = router({
     return data;
   }),
   getAllProveedor: publicProcedure.query(async () => {
-    const data = await prisma.proveedor.findMany();
+    const data = await prisma.proveedor.findMany({
+      include: {
+        suministro: true
+      }
+    });
     return data;
   }),
   createProveedor: publicProcedure.input(
