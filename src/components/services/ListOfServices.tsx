@@ -164,7 +164,7 @@ export default function ListOfServices({ initialServicios }: { initialServicios:
       default:
         return servicio.id_servicio;
     }
-  }, []);
+  }, [tipoFilter]);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {

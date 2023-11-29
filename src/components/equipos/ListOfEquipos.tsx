@@ -16,6 +16,9 @@ import {
   Pagination,
   Selection,
   SortDescriptor,
+  Modal,
+  ModalContent,
+  useDisclosure,
 } from "@nextui-org/react";
 
 import { RouterOutputs } from "@/server";
@@ -24,6 +27,7 @@ import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
 import { ExcelIcon } from "../icons/ExcelIcon";
+import ModalAddEquipo from "../Modal/AddEquipo";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -64,6 +68,7 @@ export default function ListOfEquipos({ initialServicios }: { initialServicios: 
     refetchOnReconnect: true
   });
 
+  const { isOpen: isOpenModalAdd, onOpen: onOpenModalAdd, onOpenChange: onOpenChangeModalAdd, onClose: onCloseAdd } = useDisclosure();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -140,7 +145,7 @@ export default function ListOfEquipos({ initialServicios }: { initialServicios: 
             <p className="text-bold text-tiny capitalize text-default-400">{servicio.capacidad !== null ? servicio.capacidad : servicio.tamano}</p>
           </div>
         );
-      case "tipo_servicio":
+      case "tipo_equipo":
         return (
           <div className="flex flex-col">
             <p className="text-bold text-tiny capitalize text-default-400">{servicio.tipoequipo.tipo}</p>
@@ -176,7 +181,7 @@ export default function ListOfEquipos({ initialServicios }: { initialServicios: 
       default:
         return servicio.id_equipocliente;
     }
-  }, []);
+  }, [tipoFilter]);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
@@ -272,7 +277,7 @@ export default function ListOfEquipos({ initialServicios }: { initialServicios: 
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
+            <Button color="primary" onPress={onOpenModalAdd} endContent={<PlusIcon />}>
               Agregar equipo
             </Button>
           </div>
@@ -372,6 +377,11 @@ export default function ListOfEquipos({ initialServicios }: { initialServicios: 
           }}
         </TableBody>
       </Table>
+      <Modal isOpen={isOpenModalAdd} onOpenChange={onOpenChangeModalAdd}>
+        <ModalContent>
+            <ModalAddEquipo onClose={onCloseAdd} />
+        </ModalContent>
+      </Modal>
     </>
   );
 }

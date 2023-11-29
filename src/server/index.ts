@@ -221,6 +221,32 @@ export const appRouter = router({
     });
     return data;
   }),
+  getAllTipoEquipo: publicProcedure.query(async () => {
+    const data = await prisma.tipoequipo.findMany();
+    return data;
+  }),
+  addEquipo: publicProcedure.input(
+    z.object({
+      id_cliente: z.number(),
+      id_tipoequipo: z.number(),
+      id_direccion: z.number(),
+      numerodeserie: z.string(),
+      capacidad: z.string(),
+      tamano: z.string(),
+    }),
+  ).mutation(async ({ input }) => {
+    const data = await prisma.equipocliente.create({
+      data: {
+        id_cliente: input.id_cliente,
+        id_tipoequipo: input.id_tipoequipo,
+        id_direccion: input.id_direccion,
+        numerodeserie: input.numerodeserie,
+        capacidad: input.capacidad,
+        tamano: input.tamano,
+      }
+    });
+    return data;
+  }),
 });
 
 export type AppRouter = typeof appRouter;

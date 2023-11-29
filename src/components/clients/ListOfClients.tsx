@@ -182,7 +182,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
       default:
         return user.id_cliente;
     }
-  }, []);
+  }, [tipoFilter]);
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {
