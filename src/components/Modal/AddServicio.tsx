@@ -3,7 +3,6 @@ import { trpc } from '@/app/_trpc/client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button,Checkbox,Input, ModalBody, ModalHeader, Select, SelectItem, Tab, Tabs, Textarea } from '@nextui-org/react'
 import React, { useState } from 'react';
-import DatePicker from "react-datepicker";
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup'
 import { errorNotification } from '../Notifications';
@@ -13,9 +12,13 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
   const { data: getAllTipoServicio } = trpc.getAllTipoServicio.useQuery()
   const { data: getAllReporte } = trpc.getAllReportes.useQuery()
   const { data: clientes } = trpc.getAllClientes.useQuery()
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
-  const [isEquipoEnabled, setIsEquipoEnabled] = useState(false)
+  const { data: getAllEmpleado } = trpc.getAllEmpleado.useQuery()
+  const { data: getAllProduct } = trpc.getAllProductos.useQuery()
+  const [startDate, setStartDate] = useState<string>((new Date()).toISOString().slice(0, 19).replace('T', ' '));
   const [cliente, setCliente] = useState(0)
+  const { data: equipos } = trpc.getEquipoByClient.useQuery({ id: cliente - 0 }, {
+    enabled: !!cliente
+  })
   const [isNewReport, setIsNewReport] = useState(true)
 
   const [selected, setSelected] = useState<React.Key>("photos");
@@ -41,7 +44,7 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
   }
 
   const utils = trpc.useUtils()
-  const { register, handleSubmit, reset, formState: { errors, isSubmitSuccessful } } = useForm({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: yupResolver(yup.object({
       tipo_servicio: yup.number().min(1).required(),
       cliente: yup.number().min(1).required(),
@@ -64,7 +67,6 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
   function onChangeHandler(event: any) {
     const { value } = event.target
     setCliente(value)
-    setIsEquipoEnabled(true)
   }
 
   function onChangeReporteHandler(event: any) {
@@ -88,6 +90,38 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
               selectedKey={selected}
               onSelectionChange={setSelected}
             >
+              <Tab key="recursos" title="Recursos">
+                <div className="flex flex-col gap-3 py-2">
+                  <Select
+                    label="Selecciona un empleado"
+                    placeholder="Mateo, Marcos, Lucas, Juan"
+                    className="flex-1"
+                    isInvalid={!!errors.tipo_servicio}
+                    errorMessage={!!errors.tipo_servicio && "Seleccione un empleado"}
+                    isDisabled={isUpdating}
+                  >
+                    {getAllEmpleado!?.map((empleado) => (
+                      <SelectItem key={empleado.id_empleado} value={empleado.id_empleado}>
+                        {empleado.nombre}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <Select
+                    label="Selecciona una herramienta del inventario"
+                    placeholder="Destornillador, Martillo"
+                    className="flex-1"
+                    isInvalid={!!errors.tipo_servicio}
+                    errorMessage={!!errors.tipo_servicio && "Seleccione un empleado"}
+                    isDisabled={isUpdating}
+                  >
+                    {getAllProduct!?.map((producto) => (
+                      <SelectItem key={producto.id_producto} value={producto.id_producto}>
+                        {producto.nombre}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
+              </Tab>
               <Tab key="producto" title="Producto">
                 <div className="flex flex-col gap-3 py-2">
                   <Select
@@ -120,49 +154,52 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                       </SelectItem>
                     ))}
                   </Select>
-                  {
-                    isEquipoEnabled && (
-                      <Equipo errors={errors} isUpdating={isUpdating} register={register} user_id={cliente} />
-                    )
-                  }
-                  <DatePicker selected={startDate} onChange={(date) => setStartDate(date)} />
+                  {/* isEquipoEnabled */}
+                  <Select
+                    label="Selecciona las direcciones del equipo"
+                    placeholder="Mi casa"
+                    className="max-w-xs"
+                    isInvalid={!!errors.equipo}
+                    errorMessage={!!errors.equipo && "Error al seleccionar la dirección"}
+                    {...register('equipo')}
+                    isDisabled={isUpdating}
+                  >
+                    {equipos!?.map((equipo) => (
+                      <SelectItem key={equipo.id_equipocliente} value={equipo.id_equipocliente}>
+                        {equipo.numerodeserie}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  
+                  <Input value={startDate} { ...register('fecha') } onChange={(date) => setStartDate(date.target.value)} type='datetime-local' />
                   <Checkbox defaultChecked checked={isNewReport} onChange={onChangeReporteHandler}
                     isDisabled={isUpdating}>Crear un reporte nuevo</Checkbox>
-                  {
-                    isNewReport ? (
-                      <Select
-                        label="Selecciona un registro"
-                        placeholder="Servicios de instalación de Abril"
-                        className="flex-1"
-                        isInvalid={!!errors.reporte}
-                        errorMessage={!!errors.reporte && "Ingrese un proveedor"}
-                        {...register('reporte', { onChange: onChangeHandler })}
-                        isDisabled={isUpdating}
-                      >
-                        {getAllReporte!?.map((reporte) => (
-                          <SelectItem key={reporte.id_reporte} value={reporte.id_reporte}>
-                            {reporte.detalles}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    ) : (
-                      <Input
-                        label="Nombre del reporte"
-                        placeholder="Servicios 1"
-                        variant="bordered"
-                        {...register('reporte_name')}
-                        isInvalid={!!errors.reporte_name}
-                        errorMessage={!!errors.reporte_name && "No puede estar vacio"}
-                        isDisabled={isUpdating}
-                      />
-                    )
-                  }
-                </div>
-              </Tab>
-              <Tab key="recursos" title="Recursos">
-                <div className="flex flex-col gap-3 py-2">
-                  
-                  
+
+                  <Select
+                    label="Selecciona un registro"
+                    placeholder="Servicios de instalación de Abril"
+                    className={`flex-1 ${isNewReport ? 'hidden' : ''}`}
+                    isInvalid={!!errors.reporte}
+                    errorMessage={!!errors.reporte && "Ingrese un proveedor"}
+                    {...register('reporte')}
+                    isDisabled={isUpdating}
+                  >
+                    {getAllReporte!?.map((reporte) => (
+                      <SelectItem key={reporte.id_reporte} value={reporte.id_reporte}>
+                        {reporte.detalles}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <Input
+                    label="Nombre del reporte"
+                    placeholder="Servicios 1"
+                    variant="bordered"
+                    className={`flex-1 ${!isNewReport ? 'hidden' : ''}`}
+                    {...register('reporte_name')}
+                    isInvalid={!!errors.reporte_name}
+                    errorMessage={!!errors.reporte_name && "No puede estar vacio"}
+                    isDisabled={isUpdating}
+                  />
                 </div>
               </Tab>
               <Tab key="revisar" title="Revisar">
@@ -187,27 +224,5 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
         </form>
       </ModalBody>
     </>
-  )
-}
-
-function Equipo({ user_id, isUpdating, errors, register }: { user_id: number, isUpdating: boolean, errors: any, register: any }) {
-  const { data: equipos } = trpc.getEquipoByClient.useQuery({ id: user_id - 0 })
-  
-  return (
-    <Select
-      label="Selecciona las direcciones del equipo"
-      placeholder="Mi casa"
-      className="max-w-xs"
-      isInvalid={!!errors.direccion}
-      errorMessage={!!errors.direccion && "Error al seleccionar la dirección"}
-      {...register('equipo')}
-      isDisabled={isUpdating}
-    >
-      {equipos!?.map((equipo) => (
-        <SelectItem key={equipo.id_equipocliente} value={equipo.id_equipocliente}>
-          {equipo.numerodeserie}
-        </SelectItem>
-      ))}
-    </Select>
   )
 }
