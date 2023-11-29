@@ -16,6 +16,9 @@ import {
   Pagination,
   Selection,
   SortDescriptor,
+  useDisclosure,
+  Modal,
+  ModalContent,
 } from "@nextui-org/react";
 
 import { RouterOutputs } from "@/server";
@@ -24,6 +27,7 @@ import { trpc } from "@/app/_trpc/client";
 import { serverClient } from "@/app/_trpc/serverClient";
 import { ChevronDownIcon, PlusIcon, SearchIcon, VerticalDotsIcon } from "../icons";
 import { ExcelIcon } from "../icons/ExcelIcon";
+import ModalAddServices from "../Modal/AddServicio";
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
@@ -58,6 +62,7 @@ export default function ListOfServices({ initialServicios }: { initialServicios:
     refetchOnReconnect: true
   });
 
+  const { isOpen: isOpenModalAdd, onOpen: onOpenModalAdd, onOpenChange: onOpenChangeModalAdd, onClose: onCloseAdd } = useDisclosure();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -260,7 +265,7 @@ export default function ListOfServices({ initialServicios }: { initialServicios:
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
+            <Button color="primary" endContent={<PlusIcon />} onPress={onOpenModalAdd}>
               Agregar servicio
             </Button>
           </div>
@@ -360,6 +365,11 @@ export default function ListOfServices({ initialServicios }: { initialServicios:
           }}
         </TableBody>
       </Table>
+      <Modal isOpen={isOpenModalAdd} size="2xl" onOpenChange={onOpenChangeModalAdd}>
+        <ModalContent>
+          <ModalAddServices onClose={onCloseAdd} />
+        </ModalContent>
+      </Modal>
     </>
   );
 }

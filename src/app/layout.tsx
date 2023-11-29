@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
+import 'react-datepicker/dist/react-datepicker.css'
 
 import { AppProviders } from '@/components/Providers'
 import Sidebar from '@/components/Sidebar'

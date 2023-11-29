@@ -121,6 +121,10 @@ export const appRouter = router({
     });
     return data;
   }),
+  getAllTipoServicio: publicProcedure.query(async () => {
+    const data = await prisma.tiposervicio.findMany();
+    return data;
+  }),
   getAllProveedor: publicProcedure.query(async () => {
     const data = await prisma.proveedor.findMany({
       include: {
@@ -221,6 +225,30 @@ export const appRouter = router({
       include: {
         cliente: true,
         tipoequipo: true
+      }
+    });
+    return data;
+  }),
+  getEquipoByClient: publicProcedure.input(
+    z.object({
+      id: z.number()
+      }),
+  ).query(async ({ input }) => {
+    const data = await prisma.equipocliente.findMany({
+      where: {
+        id_cliente: input.id,
+      },
+      include: {
+        cliente: true,
+        tipoequipo: true
+      }
+    });
+    return data;
+  }),
+  getAllReportes: publicProcedure.query(async () => {
+    const data = await prisma.reporte.findMany({
+      include: {
+        servicios: true
       }
     });
     return data;
