@@ -44,19 +44,19 @@ const columns = [
 
 const tipoServicio = [
   {name: "Split Inverter", uid: "split inverter"},
-  {name: "Split Standar", uid: "split standar"},
-  {name: "Central Standar", uid: "central standar"},
+  {name: "Split Estandar", uid: "split estandar"},
+  {name: "Central Estandar", uid: "central estandar"},
   {name: "Central Inverter", uid: "central inverter"},
   {name: "Ventana", uid: "ventana"},
   {name: "Empotrado", uid: "empotrado"},
   {name: "Refrigerador Inverter", uid: "refrigerador inverter"},
-  {name: "Refrigerador Standar", uid: "refrigerador standar"},
-  {name: "Congelador Inverter", uid: "Congelador inverter"},
-  {name: "Congelador Standar", uid: "Congelador standar"},
+  {name: "Refrigerador Estandar", uid: "refrigerador estandar"},
+  {name: "Congelador Inverter", uid: "congelador inverter"},
+  {name: "Congelador Estandar", uid: "congelador estandar"},
   {name: "Portatil", uid: "portatil"},
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ['id_tipoequipo', "cliente", "equipo", "tipo_servicio", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ['id_tipoequipo', "cliente", "equipo", "tipo_equipo", "actions"];
 
 type Servicio = RouterOutputs["getAllEquipos"][0];
 
@@ -99,6 +99,9 @@ export default function ListOfEquipos({ initialServicios }: { initialServicios: 
     }
 
     if(tipoFilter !== "all" && tipoFilter.size !== tipoServicio.length ){
+      console.log(Array.from(tipoFilter))
+      console.log(filteredServices)
+      debugger
       filteredServices = filteredServices.filter((servicio) => Array.from(tipoFilter).includes(servicio.tipoequipo.tipo.toLowerCase()))
     }
 
@@ -336,7 +339,7 @@ export default function ListOfEquipos({ initialServicios }: { initialServicios: 
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [selectedKeys, items.length, page, pages, hasSearchFilter, tipoFilter]);
 
   return (
     <>

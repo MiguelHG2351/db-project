@@ -24,8 +24,6 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
   const [selected, setSelected] = useState<React.Key>("photos");
 
   function onSubmit(data: any) {
-    console.log('???')
-    console.log(data)
 
     mutate({
       nombre: data.nombre, costo: data.costo, detalles: data.detalles, stock: data.stock,
@@ -62,7 +60,6 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
       reporte_name: 0,
     }
   })
-  console.log(errors)
 
   function onChangeHandler(event: any) {
     const { value } = event.target
@@ -71,8 +68,6 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
 
   function onChangeReporteHandler(event: any) {
     const { checked } = event.target
-    console.log(event)
-    console.log(checked)
     setIsNewReport(!checked)
   }
 
@@ -203,22 +198,18 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                 </div>
               </Tab>
               <Tab key="revisar" title="Revisar">
-                {/* <Input
-                  label="Detalles"
-                  placeholder="Detalles de este egreso"
-                  variant="bordered"
-                  isInvalid={!!errors.detalles}
-                  errorMessage={!!errors.detalles && "Ingresa los detalles del egreos"}
-                  {...register('detalles')}
-                  isDisabled={isUpdating}
-                /> */}
+                <div className="flex justify-end pb-2 pt-3">
+                  <Button isDisabled={isUpdating} type="submit" color="primary">
+                    Guardar
+                  </Button>
+                </div>
               </Tab>
             </Tabs>
           </div>
           
           <div className="flex justify-end pb-2 pt-3">
-            <Button isDisabled={isUpdating} type="submit" color="primary">
-              Revisar
+            <Button isDisabled={isUpdating} type="button" color="primary">
+              Siguiente
             </Button>
           </div>
         </form>

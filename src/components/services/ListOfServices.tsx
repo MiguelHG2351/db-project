@@ -324,7 +324,7 @@ export default function ListOfServices({ initialServicios }: { initialServicios:
         </div>
       </div>
     );
-  }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+  }, [selectedKeys, items.length, page, pages, hasSearchFilter, tipoFilter]);
 
   return (
     <>
