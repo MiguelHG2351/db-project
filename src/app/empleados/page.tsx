@@ -3,7 +3,7 @@ import ListOfEmpleados from '@/components/empleados/ListOfEmpleados'
 import ListOfProveedores from '@/components/proveedores/ListOfProveedores'
 
 export const metadata = {
-  title: 'Clientes | Refrikar',
+  title: 'Empleados | Refrikar',
   description: 'Clientes'
 }
 

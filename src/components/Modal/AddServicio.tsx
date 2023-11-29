@@ -1,8 +1,8 @@
 'use client'
 import { trpc } from '@/app/_trpc/client';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button,Checkbox,Input, ModalBody, ModalHeader, Select, SelectItem, Tab, Tabs, Textarea } from '@nextui-org/react'
-import React, { useState } from 'react';
+import { Button,Checkbox,Input, ModalBody, ModalHeader, Select, SelectItem, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs, Textarea } from '@nextui-org/react'
+import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup'
 import { errorNotification } from '../Notifications';
@@ -19,9 +19,15 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
   const { data: equipos } = trpc.getEquipoByClient.useQuery({ id: cliente - 0 }, {
     enabled: !!cliente
   })
-  const [isNewReport, setIsNewReport] = useState(true)
 
+  const [recursos, setRecursos] = useState<{ empleado_id: number, producto_id: number, name: string, cantidad: number, empleado: string }[]>([])
+  const [isNewReport, setIsNewReport] = useState(true)
   const [selected, setSelected] = useState<React.Key>("photos");
+  const [lastProduct, setLastProduct] = useState<{ id_producto: number, cantidad: number } | null>(null)
+
+  const empleadoRef = useRef<HTMLSelectElement>(null)
+  const productoRef = useRef<HTMLSelectElement>(null)
+  const cantidadRef = useRef<HTMLInputElement>(null)
 
   function onSubmit(data: any) {
 
@@ -71,6 +77,21 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
     setIsNewReport(!checked)
   }
 
+  function addRecursoHandler() {
+    const empleado = empleadoRef.current?.value
+    const producto = productoRef.current?.value
+
+    // validate that both are numbers
+    if ((!empleado || !producto) && isNaN(Number(empleado)) && isNaN(Number(producto))) {
+      errorNotification("Seleccione un empleado y una herramienta")
+      return
+    }
+
+    setRecursos([...recursos, { empleado_id: Number(empleado), producto_id: Number(producto), name: productoRef.current?.selectedOptions[0].text || '', cantidad: Number(cantidadRef.current?.value), empleado: empleadoRef.current?.selectedOptions[0].text || '' }])
+    setLastProduct({ id_producto: Number(producto), cantidad: Number(cantidadRef.current?.value) })
+  }
+  console.log(recursos)
+
   return (
     <>
       <ModalHeader className="flex flex-col gap-1">
@@ -89,10 +110,9 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                 <div className="flex flex-col gap-3 py-2">
                   <Select
                     label="Selecciona un empleado"
-                    placeholder="Mateo, Marcos, Lucas, Juan"
+                    ref={empleadoRef}
+                    placeholder="Mateo, Marcos, Lucas"
                     className="flex-1"
-                    isInvalid={!!errors.tipo_servicio}
-                    errorMessage={!!errors.tipo_servicio && "Seleccione un empleado"}
                     isDisabled={isUpdating}
                   >
                     {getAllEmpleado!?.map((empleado) => (
@@ -103,10 +123,9 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                   </Select>
                   <Select
                     label="Selecciona una herramienta del inventario"
+                    ref={productoRef}
                     placeholder="Destornillador, Martillo"
                     className="flex-1"
-                    isInvalid={!!errors.tipo_servicio}
-                    errorMessage={!!errors.tipo_servicio && "Seleccione un empleado"}
                     isDisabled={isUpdating}
                   >
                     {getAllProduct!?.map((producto) => (
@@ -115,9 +134,35 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                       </SelectItem>
                     ))}
                   </Select>
+                  <Input label="Cuántos productos necesita llevarse?" type='number' ref={cantidadRef} />
+                </div>
+                <div className="flex flex-col">
+                  <Table aria-label="Lista de productos y empleados">
+                    <TableHeader>
+                    <TableColumn>NAME</TableColumn>
+                      <TableColumn>ROLE</TableColumn>
+                      <TableColumn>STATUS</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      {
+                        recursos.map((recurso, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{recurso.empleado}</TableCell>
+                            <TableCell>{recurso.name}</TableCell>
+                            <TableCell>{recurso.cantidad}</TableCell>
+                          </TableRow>
+                        ))
+                      }
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="flex justify-end pb-2 pt-3">
+                  <Button isDisabled={isUpdating} type="button" color="primary" onPress={addRecursoHandler}>
+                    Agregar
+                  </Button>
                 </div>
               </Tab>
-              <Tab key="producto" title="Producto">
+              <Tab key="servicio" title="Servicio">
                 <div className="flex flex-col gap-3 py-2">
                   <Select
                     label="Selecciona un tipo de servicio"
@@ -196,21 +241,13 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                     isDisabled={isUpdating}
                   />
                 </div>
-              </Tab>
-              <Tab key="revisar" title="Revisar">
-                <div className="flex justify-end pb-2 pt-3">
-                  <Button isDisabled={isUpdating} type="submit" color="primary">
-                    Guardar
-                  </Button>
-                </div>
+                  <div className="flex justify-end pb-2 pt-3">
+                    <Button isDisabled={isUpdating} type="submit" color="primary">
+                      Guardar
+                    </Button>
+                  </div>
               </Tab>
             </Tabs>
-          </div>
-          
-          <div className="flex justify-end pb-2 pt-3">
-            <Button isDisabled={isUpdating} type="button" color="primary">
-              Siguiente
-            </Button>
           </div>
         </form>
       </ModalBody>

@@ -2,7 +2,7 @@ import { serverClient } from '@/app/_trpc/serverClient'
 import ListOfProveedores from '@/components/proveedores/ListOfProveedores'
 
 export const metadata = {
-  title: 'Clientes | Refrikar',
+  title: 'Proveedores | Refrikar',
   description: 'Clientes'
 }
 
