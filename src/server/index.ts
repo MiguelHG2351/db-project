@@ -125,6 +125,44 @@ export const appRouter = router({
     const data = await prisma.tiposervicio.findMany();
     return data;
   }),
+  addServicio: publicProcedure.input(
+    z.object({
+      id_cliente: z.number(),
+      id_tiposervicio: z.number(),
+      id_equipocliente: z.number(),
+      detalles: z.string(),
+      fecha: z.date(),
+      monto: z.number(),
+      detalle_reporte: z.string(),
+    }),
+  ).mutation(async ({ input }) => {
+    const ingreso = await prisma.ingreso.create({
+      data: {
+        fecha: input.fecha,
+        detalles: input.detalles,
+        monto: input.monto,
+      }
+    });
+
+    const reporte = await prisma.reporte.create({
+      data: {
+        detalles: input.detalle_reporte,
+        fecha: input.fecha,
+      }
+    });
+    
+    const data = await prisma.servicio.create({
+      data: {
+        id_cliente: input.id_cliente,
+        id_tiposervicio: input.id_tiposervicio,
+        id_equipocliente: input.id_equipocliente,
+        id_ingreso: ingreso.id_ingreso,
+        id_reporte: reporte.id_reporte,
+        id_recursos: 1,
+      }
+    });
+    return data;
+  }),
   getAllProveedor: publicProcedure.query(async () => {
     const data = await prisma.proveedor.findMany({
       include: {

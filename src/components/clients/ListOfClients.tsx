@@ -221,7 +221,7 @@ export default function ListOfClients({ initialClients }: { initialClients: Awai
         <div className="flex justify-between gap-3 items-end">
           <Input
             isClearable
-            className="w-full sm:max-w-[44%]"
+            className="w-full sm:max-w-[44%] h-auto"
             placeholder="Search by name..."
             startContent={<SearchIcon />}
             value={filterValue}

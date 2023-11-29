@@ -88,7 +88,7 @@ model ingreso {
   monto      Int
   detalles   String     @db.VarChar(255)
   fecha      DateTime   @db.Date
-  servicio   servicio[]
+  servicio   servicio?
 }
 
 model inventario {
@@ -156,7 +156,7 @@ model servicio {
   id_tiposervicio  Int
   id_equipocliente Int
   id_recursos      Int
-  id_ingreso       Int
+  id_ingreso       Int @unique
   id_reporte       Int
   cliente          cliente       @relation(fields: [id_cliente], references: [id_cliente], onUpdate: NoAction)
   equipocliente    equipocliente @relation(fields: [id_equipocliente], references: [id_equipocliente], onUpdate: NoAction)

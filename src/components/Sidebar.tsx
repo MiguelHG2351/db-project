@@ -7,6 +7,11 @@ import Link from "next/link";
 
 const routes = [
   {
+    name: 'Presentación',
+    icon: 'fa fa-home',
+    path: '/'
+  },
+  {
     name: 'Clientes',
     icon: 'fa fa-user',
     path: '/clientes'

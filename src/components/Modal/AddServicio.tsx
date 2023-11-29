@@ -30,21 +30,21 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
   const cantidadRef = useRef<HTMLInputElement>(null)
 
   function onSubmit(data: any) {
-
-    mutate({
-      nombre: data.nombre, costo: data.costo, detalles: data.detalles, stock: data.stock,
-      id_categoria: data.categoria - 0, id_proveedor: data.proveedor - 0, descripcion: data.descripcion
-    }, {
-      onSuccess: () => {
-        utils.getAllProveedor.invalidate()
-        utils.getAllProductos.invalidate()
-        onClose()
-        reset()
-      },
-      onError: (error) => {
-        errorNotification("Revisa los datos ingresados")
-      }
-    })
+    console.log(data)
+    // mutate({
+    //   nombre: data.nombre, costo: data.costo, detalles: data.detalles, stock: data.stock,
+    //   id_categoria: data.categoria - 0, id_proveedor: data.proveedor - 0, descripcion: data.descripcion
+    // }, {
+    //   onSuccess: () => {
+    //     utils.getAllProveedor.invalidate()
+    //     utils.getAllProductos.invalidate()
+    //     onClose()
+    //     reset()
+    //   },
+    //   onError: (error) => {
+    //     errorNotification("Revisa los datos ingresados")
+    //   }
+    // })
   }
 
   const utils = trpc.useUtils()
@@ -54,8 +54,10 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
       cliente: yup.number().min(1).required(),
       equipo: yup.number().min(1).required(),
       fecha: yup.date().required(),
-      reporte: yup.number().min(1).optional(),
-      reporte_name: yup.number().min(1).optional(),
+      reporte: yup.number().optional(),
+      reporte_name: yup.string().min(1).optional(),
+      ingreso: yup.number().min(1).required(),
+      detalles: yup.string().min(1).required()
     })),
     defaultValues: {
       tipo_servicio: 0,
@@ -63,7 +65,9 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
       equipo: 0,
       fecha: new Date(),
       reporte: 0,
-      reporte_name: 0,
+      reporte_name: "",
+      ingreso: 0,
+      detalles: ""
     }
   })
 
@@ -90,7 +94,7 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
     setRecursos([...recursos, { empleado_id: Number(empleado), producto_id: Number(producto), name: productoRef.current?.selectedOptions[0].text || '', cantidad: Number(cantidadRef.current?.value), empleado: empleadoRef.current?.selectedOptions[0].text || '' }])
     setLastProduct({ id_producto: Number(producto), cantidad: Number(cantidadRef.current?.value) })
   }
-  console.log(recursos)
+  console.log(errors)
 
   return (
     <>
@@ -139,9 +143,9 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                 <div className="flex flex-col">
                   <Table aria-label="Lista de productos y empleados">
                     <TableHeader>
-                    <TableColumn>NAME</TableColumn>
-                      <TableColumn>ROLE</TableColumn>
-                      <TableColumn>STATUS</TableColumn>
+                    <TableColumn>Empleado</TableColumn>
+                      <TableColumn>Herramienta</TableColumn>
+                      <TableColumn>Cantidad</TableColumn>
                     </TableHeader>
                     <TableBody>
                       {
@@ -196,11 +200,11 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                   </Select>
                   {/* isEquipoEnabled */}
                   <Select
-                    label="Selecciona las direcciones del equipo"
+                    label="Selecciona el equipo"
                     placeholder="Mi casa"
                     className="max-w-xs"
                     isInvalid={!!errors.equipo}
-                    errorMessage={!!errors.equipo && "Error al seleccionar la dirección"}
+                    errorMessage={!!errors.equipo && "Error al seleccionar el equipo"}
                     {...register('equipo')}
                     isDisabled={isUpdating}
                   >
@@ -211,14 +215,21 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                     ))}
                   </Select>
                   
+                  <Input label="Detalles de ingresos" { ...register('detalles') } isInvalid={!!errors.detalles}
+                    errorMessage={!!errors.detalles && "Error al seleccionar el equipo"} />
+
+                  <Input label="Detalles de ingresos" type='number' { ...register('ingreso') } isInvalid={!!errors.ingreso}
+                    errorMessage={!!errors.ingreso && "Error al seleccionar el equipo"} />
+
                   <Input value={startDate} { ...register('fecha') } onChange={(date) => setStartDate(date.target.value)} type='datetime-local' />
+
                   <Checkbox defaultChecked checked={isNewReport} onChange={onChangeReporteHandler}
                     isDisabled={isUpdating}>Crear un reporte nuevo</Checkbox>
 
                   <Select
                     label="Selecciona un registro"
                     placeholder="Servicios de instalación de Abril"
-                    className={`flex-1 ${isNewReport ? 'hidden' : ''}`}
+                    className={`flex-1 ${!isNewReport ? 'hidden' : ''}`}
                     isInvalid={!!errors.reporte}
                     errorMessage={!!errors.reporte && "Ingrese un proveedor"}
                     {...register('reporte')}
@@ -234,7 +245,7 @@ export default function ModalAddServices({ onClose }: {onClose: () => void}) {
                     label="Nombre del reporte"
                     placeholder="Servicios 1"
                     variant="bordered"
-                    className={`flex-1 ${!isNewReport ? 'hidden' : ''}`}
+                    className={`flex-1 ${isNewReport ? 'hidden' : ''}`}
                     {...register('reporte_name')}
                     isInvalid={!!errors.reporte_name}
                     errorMessage={!!errors.reporte_name && "No puede estar vacio"}
